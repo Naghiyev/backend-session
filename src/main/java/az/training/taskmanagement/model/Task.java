@@ -3,12 +3,6 @@ package az.training.taskmanagement.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Task domain model.
- *
- * Task bir User-ə aiddir (userId vasitəsilə).
- * createdAt / updatedAt audit sahələridir.
- */
 public class Task {
 
     private Long id;

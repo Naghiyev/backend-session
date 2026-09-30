@@ -15,11 +15,7 @@ import az.training.taskmanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Task üçün business logic.
- *
- * Task yaradılarkən user-in və (verilibsə) category-nin mövcudluğu yoxlanılır.
- */
+
 public class TaskService {
 
     private final TaskRepository taskRepository;
@@ -50,10 +46,6 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    /**
-     * categoryId məcburi deyil (null ola bilər).
-     * Verilibsə: category mövcud və aktiv olmalıdır.
-     */
     private void validateCategory(Long categoryId) {
         if (categoryId == null) {
             return;
