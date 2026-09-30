@@ -1,6 +1,7 @@
 package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,16 @@ public class TaskRepository {
         List<Task> result = new ArrayList<>();
         for (Task task : storage.values()) {
             if (task.getUserId() != null && task.getUserId().equals(userId)) {
+                result.add(task);
+            }
+        }
+        return result;
+    }
+
+    public List<Task> findByStatus(TaskStatus status) {
+        List<Task> result = new ArrayList<>();
+        for (Task task : storage.values()) {
+            if (task.getStatus() == status) {
                 result.add(task);
             }
         }
