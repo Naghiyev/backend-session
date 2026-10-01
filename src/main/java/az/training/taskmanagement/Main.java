@@ -1,11 +1,10 @@
 package az.training.taskmanagement;
 
-import az.training.taskmanagement.model.Priority;
-import az.training.taskmanagement.model.Task;
-import az.training.taskmanagement.model.TaskStatus;
-import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.model.*;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.CategoryService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 
@@ -25,7 +24,9 @@ public class Main {
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
         UserService userService = new UserService(userRepository);
-        TaskService taskService = new TaskService(taskRepository, userRepository);
+        CategoryRepository categoryRepository = new CategoryRepository();
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        TaskService taskService = new TaskService(taskRepository, userRepository, categoryRepository);
 
         System.out.println("=== Task Management API - Lesson 1 (in-memory) ===\n");
 
@@ -34,14 +35,18 @@ public class Main {
         User ali = userService.createUser("Ali", "ali@example.com");
         System.out.println("Yaradılan user-lər:");
         userService.getAllUsers().forEach(u -> System.out.println("  " + u));
-
+        // CREATE categories
+        Category c1 = categoryService.createCategory("Electronic");
+        Category c2 = categoryService.createCategory("Clothing");
+        System.out.println("\nCategories:");
+        categoryService.getAllCategories().forEach(c -> System.out.println("  " + c));
         // CREATE tasks
         Task t1 = taskService.createTask("Backend syllabus hazırla",
-                "8 dərslik plan", Priority.HIGH, darya.getId());
+                "8 dərslik plan", Priority.HIGH, darya.getId(), c1.getId());
         Task t2 = taskService.createTask("Repository nümunəsi yaz",
-                "In-memory CRUD", Priority.MEDIUM, darya.getId());
+                "In-memory CRUD", Priority.MEDIUM, darya.getId(), c2.getId());
         Task t3 = taskService.createTask("Java essentials təkrar et",
-                null, Priority.LOW, ali.getId());
+                null, Priority.LOW, ali.getId(), c1.getId());
         System.out.println("\nYaradılan task-lar:");
         taskService.getAllTasks().forEach(t -> System.out.println("  " + t));
 

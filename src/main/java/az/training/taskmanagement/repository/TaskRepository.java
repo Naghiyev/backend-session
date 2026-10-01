@@ -1,6 +1,7 @@
 package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +9,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
- * In-memory Task repository.
+ * In-memory Task repository.   
  */
 public class TaskRepository {
 
@@ -45,5 +47,10 @@ public class TaskRepository {
 
     public void deleteById(Long id) {
         storage.remove(id);
+    }
+    public List<Task> findByStatus(TaskStatus status) {
+        return storage.values().stream()
+                .filter(task -> task.getStatus() == status)
+                .collect(Collectors.toList());
     }
 }
