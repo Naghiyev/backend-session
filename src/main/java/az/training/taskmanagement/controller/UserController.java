@@ -5,6 +5,7 @@ import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
+import az.training.taskmanagement.dto.UpdateUserRequest;
 
 import java.util.List;
 
@@ -44,6 +45,10 @@ public class UserController {
     // GET /users/{id}/tasks
     public List<TaskResponse> getUserTasks(Long id) {
         return taskService.getTasksByUser(id);
+    }
+
+    public UserResponse update(Long id, UpdateUserRequest request) {
+        return userService.updateUser(id, request);
     }
 
     // DELETE /users/{id}
