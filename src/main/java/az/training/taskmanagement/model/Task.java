@@ -7,7 +7,7 @@ import java.util.Objects;
  * Task domain model.
  *
  * Task bir User-ə aiddir (userId vasitəsilə).
- * createdAt / updatedAt audit sahələridir.
+ * createdAt / updatedAt audit sahələridir.\
  */
 public class Task {
 
