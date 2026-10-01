@@ -9,7 +9,7 @@ import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
-
+import az.training.taskmanagement.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,9 +28,7 @@ public class TaskService {
             throw new ValidationException("title boş ola bilməz");
         }
         // Task yaratmazdan əvvəl user-in mövcudluğunu yoxla.
-        if (userRepository.findById(request.userId()).isEmpty()) {
-            throw ResourceNotFoundException.of("User", request.userId());
-        }
+        findUserOrThrow(request.userId()); // ← DƏYİŞDİ (1)
         Task saved = taskRepository.save(TaskMapper.toEntity(request));
         return TaskMapper.toResponse(saved);
     }
@@ -80,5 +78,10 @@ public class TaskService {
     private Task findTaskOrThrow(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Task", id));
+    }
+
+    private User findUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> ResourceNotFoundException.of("User", userId));
     }
 }
