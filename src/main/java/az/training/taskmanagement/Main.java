@@ -1,11 +1,14 @@
 package az.training.taskmanagement;
 
+import az.training.taskmanagement.model.Category;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.CategoryService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 
@@ -24,8 +27,10 @@ public class Main {
         // Lesson 4-də bunu Spring avtomatik edəcək (Dependency Injection).
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
         UserService userService = new UserService(userRepository);
-        TaskService taskService = new TaskService(taskRepository, userRepository);
+        TaskService taskService = new TaskService(taskRepository, userRepository, categoryRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository,taskRepository);
 
         System.out.println("=== Task Management API - Lesson 1 (in-memory) ===\n");
 
@@ -35,13 +40,16 @@ public class Main {
         System.out.println("Yaradılan user-lər:");
         userService.getAllUsers().forEach(u -> System.out.println("  " + u));
 
+        Category java = categoryService.createCategory("Java","Backend Development");
+        Category python = categoryService.createCategory("Python","Backend Development");
+
         // CREATE tasks
         Task t1 = taskService.createTask("Backend syllabus hazırla",
-                "8 dərslik plan", Priority.HIGH, darya.getId());
+                "8 dərslik plan", Priority.HIGH, darya.getId(), java.getId());
         Task t2 = taskService.createTask("Repository nümunəsi yaz",
-                "In-memory CRUD", Priority.MEDIUM, darya.getId());
+                "In-memory CRUD", Priority.MEDIUM, darya.getId(), python.getId());
         Task t3 = taskService.createTask("Java essentials təkrar et",
-                null, Priority.LOW, ali.getId());
+                null, Priority.LOW, ali.getId(),java.getId());
         System.out.println("\nYaradılan task-lar:");
         taskService.getAllTasks().forEach(t -> System.out.println("  " + t));
 

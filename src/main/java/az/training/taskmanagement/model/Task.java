@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * Task domain model.
- *
+ * <p>
  * Task bir User-ə aiddir (userId vasitəsilə).
  * createdAt / updatedAt audit sahələridir.
  */
@@ -19,12 +19,13 @@ public class Task {
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long categoryId;
 
     public Task() {
     }
 
     public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
+                TaskStatus status, Priority priority, Long userId, Long categoryId) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -33,6 +34,7 @@ public class Task {
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+        this.categoryId = categoryId;
     }
 
     public Long getId() {
@@ -99,6 +101,14 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -114,6 +124,6 @@ public class Task {
     @Override
     public String toString() {
         return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + ", userId=" + userId + "}";
+                + ", priority=" + priority + ", userId=" + userId + ", categoryId=" + categoryId + "}";
     }
 }
