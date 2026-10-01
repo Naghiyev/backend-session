@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.UpdateUserRequest;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -9,6 +10,7 @@ import az.training.taskmanagement.mapper.UserMapper;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserService {
@@ -43,6 +45,23 @@ public class UserService {
                 .map(UserMapper::toResponse)
                 .toList();
     }
+
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+        User user = findUserOrThrow(id);
+
+        if (request.name() != null) {
+            user.setName(request.name());
+        }
+
+        if (request.email() != null) {
+            user.setEmail(request.email());
+        }
+
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return UserMapper.toResponse(userRepository.save(user));
+    }
+
 
     public void deleteUser(Long id) {
         findUserOrThrow(id);

@@ -1,5 +1,6 @@
 package az.training.taskmanagement.model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -15,6 +16,7 @@ public class User {
     private Long id;
     private String name;
     private String email;
+    private LocalDateTime updatedAt;
 
     public User() {
     }
@@ -47,6 +49,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
