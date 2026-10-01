@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * Task domain model.
- *
+ * <p>
  * Task bir User-ə aiddir (userId vasitəsilə).
  * createdAt / updatedAt audit sahələridir.
  */
@@ -33,6 +33,53 @@ public class Task {
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+    }
+
+    public static class Builder {
+
+        private Long id;
+        private String title;
+        private String description;
+        private TaskStatus status;
+        private Priority priority;
+        private Long userId;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder status(TaskStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder priority(Priority priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Task build() {
+            return new Task(id, title, description, status, priority, userId);
+        }
     }
 
     public Long getId() {

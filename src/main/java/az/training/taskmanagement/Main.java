@@ -1,22 +1,22 @@
 package az.training.taskmanagement;
 
+import az.training.taskmanagement.controller.CategoryController;
 import az.training.taskmanagement.controller.TaskController;
 import az.training.taskmanagement.controller.UserController;
-import az.training.taskmanagement.dto.CreateTaskRequest;
-import az.training.taskmanagement.dto.CreateUserRequest;
-import az.training.taskmanagement.dto.UpdateTaskRequest;
-import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.dto.*;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.CategoryService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 
 /**
  * Lesson 2 demo — layered architecture.
- *
+ * <p>
  * Diqqət et: burada qatları ƏL İLƏ quraşdırırıq (manual dependency injection).
  * Controller -> Service -> Repository zənciri interface-lər üzərindən bağlanır.
  * Lesson 4-də Spring bu "wiring"-i avtomatik edəcək.
@@ -27,14 +27,17 @@ public class Main {
         // 1) Repository qatı (in-memory implementasiya)
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
 
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserService(userRepository);
         TaskService taskService = new TaskService(taskRepository, userRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository);
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
         TaskController taskController = new TaskController(taskService);
+        CategoryController categoryController = new CategoryController(categoryService);
 
         System.out.println("=== Task Management API - Lesson 2 (layered) ===\n");
 
@@ -46,6 +49,15 @@ public class Main {
         var t2 = taskController.create(new CreateTaskRequest("DTO mapping öyrən", null, Priority.MEDIUM, darya.id()));
         taskController.create(new CreateTaskRequest("SOLID təkrar", null, Priority.LOW, ali.id()));
         System.out.println("\nDarya-nın task-ları: " + userController.getUserTasks(darya.id()));
+
+        CategoryResponse programming = categoryController.create(new CreateCategoryRequest("Programming"));
+        CategoryResponse java = categoryController.create(new CreateCategoryRequest("Java"));
+        System.out.println("Category-ler: " + categoryController.getAllCategories());
+
+
+        categoryController.updateCategory(java.id(), new UpdateCategoryRequest("C#"));
+        System.out.println("\nYenilenmis category: " + categoryController.getCategoryById(java.id()));
+
 
         // PATCH nümunəsi (yalnız status dəyişir)
         taskController.update(t2.id(), new UpdateTaskRequest(null, null, TaskStatus.DONE, null));

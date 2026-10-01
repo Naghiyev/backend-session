@@ -13,8 +13,13 @@ public final class TaskMapper {
 
     public static Task toEntity(CreateTaskRequest request) {
         Priority priority = request.priority() == null ? Priority.MEDIUM : request.priority();
-        return new Task(null, request.title(), request.description(),
-                TaskStatus.TODO, priority, request.userId());
+        return new Task.Builder()
+                .title(request.title())
+                .description(request.description())
+                .status(TaskStatus.TODO)
+                .priority(priority)
+                .userId(request.userId())
+                .build();
     }
 
     public static TaskResponse toResponse(Task task) {

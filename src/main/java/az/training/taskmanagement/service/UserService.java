@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.UpdateUserRequest;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -47,6 +48,15 @@ public class UserService {
     public void deleteUser(Long id) {
         findUserOrThrow(id);
         userRepository.deleteById(id);
+    }
+
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+        User userOrThrow = findUserOrThrow(id);
+        userOrThrow.setName(request.name());
+        userOrThrow.setEmail(request.email());
+
+        User save = userRepository.save(userOrThrow);
+        return UserMapper.toResponse(save);
     }
 
     private User findUserOrThrow(Long id) {

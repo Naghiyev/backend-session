@@ -2,6 +2,7 @@ package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
 import az.training.taskmanagement.dto.TaskResponse;
+import az.training.taskmanagement.dto.UpdateUserRequest;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
@@ -10,9 +11,10 @@ import java.util.List;
 
 /**
  * Controller = sistemin xarici sərhədi (boundary).
- *
+ * <p>
  * Lesson 2-də bu sadə Java class-dır və HTTP haqqında heç nə bilmir -
  * yalnız request-i qəbul edib service-ə ötürür. Lesson 4-də üzərinə
+ *
  * @RestController / @PostMapping annotasiyaları əlavə ediləcək və eyni
  * struktur real REST endpoint-lərinə çevriləcək.
  */
@@ -39,6 +41,11 @@ public class UserController {
     // GET /users
     public List<UserResponse> getAll() {
         return userService.getAllUsers();
+    }
+
+    //PATCH /users{id}
+    public UserResponse update(Long id, UpdateUserRequest request) {
+        return userService.updateUser(id, request);
     }
 
     // GET /users/{id}/tasks
