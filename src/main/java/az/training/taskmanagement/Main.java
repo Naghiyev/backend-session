@@ -4,6 +4,7 @@ import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
@@ -24,8 +25,9 @@ public class Main {
         // Lesson 4-də bunu Spring avtomatik edəcək (Dependency Injection).
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
         UserService userService = new UserService(userRepository);
-        TaskService taskService = new TaskService(taskRepository, userRepository);
+        TaskService taskService = new TaskService(taskRepository, userRepository,categoryRepository);
 
         System.out.println("=== Task Management API - Lesson 1 (in-memory) ===\n");
 
@@ -37,11 +39,11 @@ public class Main {
 
         // CREATE tasks
         Task t1 = taskService.createTask("Backend syllabus hazırla",
-                "8 dərslik plan", Priority.HIGH, darya.getId());
+                "8 dərslik plan", Priority.HIGH, darya.getId(),3L);
         Task t2 = taskService.createTask("Repository nümunəsi yaz",
-                "In-memory CRUD", Priority.MEDIUM, darya.getId());
+                "In-memory CRUD", Priority.MEDIUM, darya.getId(),1L);
         Task t3 = taskService.createTask("Java essentials təkrar et",
-                null, Priority.LOW, ali.getId());
+                null, Priority.LOW, ali.getId(),2L);
         System.out.println("\nYaradılan task-lar:");
         taskService.getAllTasks().forEach(t -> System.out.println("  " + t));
 
