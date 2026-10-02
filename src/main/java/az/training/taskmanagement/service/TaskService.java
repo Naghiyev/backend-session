@@ -27,10 +27,7 @@ public class TaskService {
         if (request.title() == null || request.title().isBlank()) {
             throw new ValidationException("title boş ola bilməz");
         }
-        // Task yaratmazdan əvvəl user-in mövcudluğunu yoxla.
-        if (userRepository.findById(request.userId()).isEmpty()) {
-            throw ResourceNotFoundException.of("User", request.userId());
-        }
+        findUserOrThrow(request.userId());
         Task saved = taskRepository.save(TaskMapper.toEntity(request));
         return TaskMapper.toResponse(saved);
     }
@@ -46,9 +43,7 @@ public class TaskService {
     }
 
     public List<TaskResponse> getTasksByUser(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw ResourceNotFoundException.of("User", userId);
-        }
+        findUserOrThrow(userId);
         return taskRepository.findByUserId(userId).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
@@ -81,4 +76,10 @@ public class TaskService {
         return taskRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Task", id));
     }
+
+    private void findUserOrThrow(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> ResourceNotFoundException.of("User", userId));
+    }
 }
+
