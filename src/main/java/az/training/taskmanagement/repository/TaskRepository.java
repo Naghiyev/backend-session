@@ -1,13 +1,12 @@
 package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 /**
  * In-memory Task repository.
@@ -30,20 +29,39 @@ public class TaskRepository {
     }
 
     public List<Task> findAll() {
-        return new ArrayList<>(storage.values());
+        return findWhere(task -> true);
     }
 
     public List<Task> findByUserId(Long userId) {
-        List<Task> result = new ArrayList<>();
-        for (Task task : storage.values()) {
-            if (task.getUserId() != null && task.getUserId().equals(userId)) {
-                result.add(task);
-            }
-        }
-        return result;
+        return findWhere(task -> Objects.equals(task.getUserId(), userId));
+    }
+
+    public List<Task> findByStatus(TaskStatus status) {
+        return findWhere(task -> task.getStatus() == status);
+    }
+
+    public List<Task> findByCategoryId(Long categoryId) {
+        return findWhere(task -> Objects.equals(task.getCategoryId(), categoryId));
+    }
+
+    public boolean existsByUserId(Long userId) {
+        return storage.values().stream()
+                .anyMatch(task -> Objects.equals(task.getUserId(), userId));
+    }
+
+    public boolean existsByCategoryId(Long categoryId) {
+        return storage.values().stream()
+                .anyMatch(task -> Objects.equals(task.getCategoryId(), categoryId));
     }
 
     public void deleteById(Long id) {
         storage.remove(id);
+    }
+
+    private List<Task> findWhere(Predicate<Task> condition) {
+        return storage.values().stream()
+                .filter(condition)
+                .sorted(Comparator.comparing(Task::getId))
+                .toList();
     }
 }

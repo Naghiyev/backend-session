@@ -2,10 +2,7 @@ package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -36,7 +33,13 @@ public class UserRepository {
     }
 
     public List<User> findAll() {
-        return new ArrayList<>(storage.values());
+        return storage.values().stream()
+                .sorted(Comparator.comparing(User::getId))
+                .toList();
+    }
+
+    public boolean existsById(Long id) {
+        return storage.containsKey(id);
     }
 
     public boolean existsByEmail(String email) {

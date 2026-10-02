@@ -1,10 +1,15 @@
 package az.training.taskmanagement.service;
 
+import az.training.taskmanagement.exception.DuplicateEmailException;
+import az.training.taskmanagement.exception.ResourceInUseException;
+import az.training.taskmanagement.exception.UserNotFoundException;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 
 import java.util.List;
 
+import static az.training.taskmanagement.util.ValidationUtils.*;
 /**
  * User üçün business logic.
  *
@@ -13,29 +18,33 @@ import java.util.List;
  */
 public class UserService {
 
-    private final UserRepository userRepository;
+    private static final int NAME_MAX_LENGTH = 100;
 
-    public UserService(UserRepository userRepository) {
+    private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+
+    public UserService(UserRepository userRepository, TaskRepository taskRepository) {
         this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
     }
 
     public User createUser(String name, String email) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name boş ola bilməz");
+        String validName = requireNonBlank(name, "name", NAME_MAX_LENGTH);
+        String validEmail = requireValidEmail(email);
+        if (userRepository.existsByEmail(validEmail)) {
+            throw new DuplicateEmailException(validEmail);
         }
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("email boş ola bilməz");
-        }
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Bu email artıq mövcuddur: " + email);
-        }
-        User user = new User(null, name, email);
+        User user = User.builder()
+                .name(validName)
+                .email(validEmail)
+                .build();
         return userRepository.save(user);
     }
 
     public User getUserById(Long id) {
+        requireNonNull(id, "id");
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User tapılmadı: id=" + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     public List<User> getAllUsers() {
@@ -44,6 +53,10 @@ public class UserService {
 
     public void deleteUser(Long id) {
         getUserById(id); // mövcudluğu yoxla
+        if (taskRepository.existsByUserId(id)) {
+            throw new ResourceInUseException(
+                    "User silinə bilməz, ona aid task-lar var: id=" + id);
+        }
         userRepository.deleteById(id);
     }
 }
