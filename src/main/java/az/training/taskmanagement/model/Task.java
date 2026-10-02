@@ -17,22 +17,85 @@ public class Task {
     private TaskStatus status;
     private Priority priority;
     private Long userId;
+    private Long categoryId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Task() {
-    }
-
-    public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.priority = priority;
-        this.userId = userId;
+    private Task(Builder builder) {
+        this.id = builder.id;
+        this.title = builder.title;
+        this.description = builder.description;
+        this.status = builder.status;
+        this.priority = builder.priority;
+        this.userId = builder.userId;
+        this.categoryId = builder.categoryId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+
+        private Long id;
+        private String title;
+        private String description;
+        private TaskStatus status = TaskStatus.TODO;     // default
+        private Priority priority = Priority.MEDIUM;     // default
+        private Long userId;
+        private Long categoryId;
+
+        private Builder() {
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder status(TaskStatus status) {
+            if (status != null) {
+                this.status = status;
+            }
+            return this;
+        }
+
+        public Builder priority(Priority priority) {
+            if (priority != null) {
+                this.priority = priority;
+            }
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder categoryId(Long categoryId) {
+            this.categoryId = categoryId;
+            return this;
+        }
+
+        public Task build() {
+            return new Task(this);
+        }
+    }
+
+    public void touch() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -83,6 +146,14 @@ public class Task {
         this.userId = userId;
     }
 
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -114,6 +185,7 @@ public class Task {
     @Override
     public String toString() {
         return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + ", userId=" + userId + "}";
+                + ", priority=" + priority + ", userId=" + userId
+                + ", categoryId=" + categoryId + "}";
     }
 }
