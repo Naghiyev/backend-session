@@ -19,16 +19,17 @@ public class Task {
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    private Long categoryId;
     public Task() {
     }
 
     public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
+                TaskStatus status, Long categoryId, Priority priority, Long userId) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.categoryId = categoryId;
         this.priority = priority;
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
@@ -63,8 +64,16 @@ public class Task {
         return status;
     }
 
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Priority getPriority() {
@@ -113,7 +122,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + ", userId=" + userId + "}";
+        return "Task{id=" + id + ", title='" + title + "', status=" + status +
+                ", categoryId=" + categoryId + ", priority=" + priority + ", userId=" + userId + "}";
     }
 }
