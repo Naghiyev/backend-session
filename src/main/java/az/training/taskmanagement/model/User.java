@@ -4,11 +4,11 @@ import java.util.Objects;
 
 /**
  * User domain model.
- *
+ * <p>
  * Lesson 1 fokusu:
- *  - class, field, constructor
- *  - encapsulation (private field + getter/setter)
- *  - equals/hashCode id əsasında
+ * - class, field, constructor
+ * - encapsulation (private field + getter/setter)
+ * - equals/hashCode id əsasında
  */
 public class User {
 

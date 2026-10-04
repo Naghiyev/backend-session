@@ -1,0 +1,7 @@
+package az.training.taskmanagement.exception;
+
+public class InvalidUserException extends RuntimeException {
+    public InvalidUserException(String message) {
+        super(message);
+    }
+}
