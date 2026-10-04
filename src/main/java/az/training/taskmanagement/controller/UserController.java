@@ -1,8 +1,9 @@
 package az.training.taskmanagement.controller;
 
-import az.training.taskmanagement.dto.CreateUserRequest;
-import az.training.taskmanagement.dto.TaskResponse;
-import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.dto.user.request.CreateUserRequest;
+import az.training.taskmanagement.dto.task.response.TaskResponse;
+import az.training.taskmanagement.dto.user.request.UpdateUserRequest;
+import az.training.taskmanagement.dto.user.response.UserResponse;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 
@@ -44,6 +45,11 @@ public class UserController {
     // GET /users/{id}/tasks
     public List<TaskResponse> getUserTasks(Long id) {
         return taskService.getTasksByUser(id);
+    }
+
+    // PATCH /users/{id}
+    public UserResponse update(Long id, UpdateUserRequest request) {
+        return userService.updateUser(id, request);
     }
 
     // DELETE /users/{id}

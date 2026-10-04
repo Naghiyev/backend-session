@@ -1,4 +1,4 @@
-package az.training.taskmanagement.dto;
+package az.training.taskmanagement.dto.task.request;
 
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;

@@ -1,8 +1,8 @@
 package az.training.taskmanagement.controller;
 
-import az.training.taskmanagement.dto.CreateTaskRequest;
-import az.training.taskmanagement.dto.TaskResponse;
-import az.training.taskmanagement.dto.UpdateTaskRequest;
+import az.training.taskmanagement.dto.task.request.CreateTaskRequest;
+import az.training.taskmanagement.dto.task.response.TaskResponse;
+import az.training.taskmanagement.dto.task.request.UpdateTaskRequest;
 import az.training.taskmanagement.service.TaskService;
 
 import java.util.List;

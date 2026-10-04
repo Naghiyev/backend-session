@@ -1,4 +1,4 @@
-package az.training.taskmanagement.dto;
+package az.training.taskmanagement.dto.task.response;
 
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
@@ -15,6 +15,7 @@ public record TaskResponse(
         TaskStatus status,
         Priority priority,
         Long userId,
+        Long categoryId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 }

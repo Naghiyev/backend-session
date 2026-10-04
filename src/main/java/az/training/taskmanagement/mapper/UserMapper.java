@@ -1,7 +1,7 @@
 package az.training.taskmanagement.mapper;
 
-import az.training.taskmanagement.dto.CreateUserRequest;
-import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.dto.user.request.CreateUserRequest;
+import az.training.taskmanagement.dto.user.response.UserResponse;
 import az.training.taskmanagement.model.User;
 
 /**

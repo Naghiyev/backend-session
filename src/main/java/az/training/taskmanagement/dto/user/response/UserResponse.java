@@ -1,4 +1,4 @@
-package az.training.taskmanagement.dto;
+package az.training.taskmanagement.dto.user.response;
 
 /**
  * Xaricə qaytarılan User məlumatı (response DTO).

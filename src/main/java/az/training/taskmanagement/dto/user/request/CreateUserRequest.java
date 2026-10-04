@@ -1,4 +1,4 @@
-package az.training.taskmanagement.dto;
+package az.training.taskmanagement.dto.user.request;
 
 /**
  * User yaratmaq üçün gələn məlumat (request DTO).
