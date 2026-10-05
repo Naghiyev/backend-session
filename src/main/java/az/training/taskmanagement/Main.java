@@ -11,12 +11,15 @@ import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
-import az.training.taskmanagement.repository.inmemory.InMemoryTaskRepository;
+//import az.training.taskmanagement.repository.inmemory.InMemoryTaskRepository;
+import az.training.taskmanagement.repository.inmemory.SortedInMemoryTaskRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryUserRepository;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 import az.training.taskmanagement.service.impl.TaskServiceImpl;
 import az.training.taskmanagement.service.impl.UserServiceImpl;
+import az.training.taskmanagement.service.NotificationService;
+import az.training.taskmanagement.service.impl.NoOpNotificationService;
 
 /**
  * Lesson 2 demo — layered architecture.
@@ -30,11 +33,31 @@ public class Main {
     public static void main(String[] args) {
         // 1) Repository qatı (in-memory implementasiya)
         UserRepository userRepository = new InMemoryUserRepository();
-        TaskRepository taskRepository = new InMemoryTaskRepository();
+
+
+
+
+
+
+//        TaskRepository taskRepository = new InMemoryTaskRepository();
+        TaskRepository taskRepository = new SortedInMemoryTaskRepository();
+
+
+
+
+
+
+
+
+
+
 
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserServiceImpl(userRepository);
-        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository);
+        NotificationService notificationService = new NoOpNotificationService();
+        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository, notificationService);
+
+
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
@@ -63,6 +86,16 @@ public class Main {
             System.out.println("  " + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
 
+        // ===== Homework 3: SortedInMemoryTaskRepository =====
+        taskController.create(new CreateTaskRequest("Kiçik düzəliş", null, Priority.LOW, darya.id()));
+        taskController.create(new CreateTaskRequest("Təcili bug", null, Priority.HIGH, darya.id()));
+        System.out.println("\nDarya-nın task-ları (prioritetə görə sıralı):");
+        userController.getUserTasks(darya.id())
+                .forEach(t -> System.out.println("  " + t.priority() + " - " + t.title() + " (id=" + t.id() + ")"));
+
+
         System.out.println("\n=== Demo bitdi ===");
+
+
     }
 }
