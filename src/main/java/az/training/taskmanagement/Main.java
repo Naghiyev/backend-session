@@ -1,16 +1,17 @@
 package az.training.taskmanagement;
 
+import az.training.taskmanagement.controller.CategoryController;
 import az.training.taskmanagement.controller.TaskController;
 import az.training.taskmanagement.controller.UserController;
-import az.training.taskmanagement.dto.CreateTaskRequest;
-import az.training.taskmanagement.dto.CreateUserRequest;
-import az.training.taskmanagement.dto.UpdateTaskRequest;
-import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.dto.*;
 import az.training.taskmanagement.exception.DuplicateResourceException;
+import az.training.taskmanagement.model.Category;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.CategoryService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 
@@ -27,14 +28,17 @@ public class Main {
         // 1) Repository qatı (in-memory implementasiya)
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
 
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserService(userRepository);
-        TaskService taskService = new TaskService(taskRepository, userRepository);
+        TaskService taskService = new TaskService(taskRepository, userRepository, categoryRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository);
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
         TaskController taskController = new TaskController(taskService);
+        CategoryController categoryController = new CategoryController(categoryService);
 
         System.out.println("=== Task Management API - Lesson 2 (layered) ===\n");
 
@@ -42,9 +46,12 @@ public class Main {
         UserResponse ali = userController.create(new CreateUserRequest("Ali", "ali@example.com"));
         System.out.println("User-lər: " + userController.getAll());
 
-        taskController.create(new CreateTaskRequest("Layered refactor", "controller/service/repo", Priority.HIGH, darya.id()));
-        var t2 = taskController.create(new CreateTaskRequest("DTO mapping öyrən", null, Priority.MEDIUM, darya.id()));
-        taskController.create(new CreateTaskRequest("SOLID təkrar", null, Priority.LOW, ali.id()));
+        CategoryResponse c1 = categoryController.create(new CreateCategoryRequest("Is", "Saat 6-ya kimi bitirilmelidi."));
+        CategoryResponse c2 = categoryController.create(new CreateCategoryRequest("Sexsi", "Hefte sonlari tamamlanmalidi."));
+
+        taskController.create(new CreateTaskRequest("Layered refactor", "controller/service/repo", Priority.HIGH, darya.id(), c1.id()));
+        var t2 = taskController.create(new CreateTaskRequest("DTO mapping öyrən", null, Priority.MEDIUM, darya.id(), c2.id()));
+        taskController.create(new CreateTaskRequest("SOLID təkrar", null, Priority.LOW, ali.id(), c2.id()));
         System.out.println("\nDarya-nın task-ları: " + userController.getUserTasks(darya.id()));
 
         // PATCH nümunəsi (yalnız status dəyişir)

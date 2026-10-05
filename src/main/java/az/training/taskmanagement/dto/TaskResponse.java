@@ -2,7 +2,6 @@ package az.training.taskmanagement.dto;
 
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
-
 import java.time.LocalDateTime;
 
 /**
@@ -16,5 +15,6 @@ public record TaskResponse(
         Priority priority,
         Long userId,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt) {
+        LocalDateTime updatedAt,
+        Long categoryId) {
 }

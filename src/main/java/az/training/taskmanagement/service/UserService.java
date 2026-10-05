@@ -1,7 +1,6 @@
 package az.training.taskmanagement.service;
 
-import az.training.taskmanagement.dto.CreateUserRequest;
-import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.dto.*;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
@@ -42,6 +41,39 @@ public class UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
+    }
+
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+
+        User user = findUserOrThrow(id);
+
+        if (request.name() != null) {
+            if (request.name().isBlank()) {
+                throw new ValidationException("name boş ola bilməz");
+            }
+
+            user.setName(request.name());
+        }
+
+        if (request.email() != null) {
+            if (request.email().isBlank()) {
+                throw new ValidationException("email boş ola bilməz");
+            }
+
+            if (!request.email().equals(user.getEmail())
+                    && userRepository.existsByEmail(request.email())) {
+
+                throw new DuplicateResourceException(
+                        "Bu email artıq mövcuddur: " + request.email()
+                );
+            }
+
+            user.setEmail(request.email());
+        }
+
+        User saved = userRepository.save(user);
+
+        return UserMapper.toResponse(saved);
     }
 
     public void deleteUser(Long id) {

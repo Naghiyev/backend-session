@@ -19,12 +19,13 @@ public class Task {
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long categoryId;
 
     public Task() {
     }
 
     public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
+                TaskStatus status, Priority priority, Long userId, Long categoryId) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -33,6 +34,7 @@ public class Task {
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+        this.categoryId = categoryId;
     }
 
     public Long getId() {
@@ -99,8 +101,16 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { // being elaborated
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
         return Objects.equals(id, task.id);
@@ -109,11 +119,20 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
+    } // being elaborated
 
     @Override
     public String toString() {
-        return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + ", userId=" + userId + "}";
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", userId=" + userId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", categoryId=" + categoryId +
+                '}';
     }
 }
