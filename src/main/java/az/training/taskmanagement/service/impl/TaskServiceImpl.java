@@ -9,6 +9,7 @@ import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.NotificationService;
 import az.training.taskmanagement.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -18,10 +19,13 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository
+            ,NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.notificationService=notificationService;
     }
 
     @Override
@@ -34,6 +38,7 @@ public class TaskServiceImpl implements TaskService {
             throw ResourceNotFoundException.of("User", request.userId());
         }
         Task saved = taskRepository.save(TaskMapper.toEntity(request));
+        notificationService.sendNotification("Task yaradildi");
         return TaskMapper.toResponse(saved);
     }
 
