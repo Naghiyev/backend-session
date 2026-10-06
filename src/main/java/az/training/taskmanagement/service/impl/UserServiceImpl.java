@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.UpdateUserRequest; // Bu sətir əlavə olundu
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -56,6 +57,21 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+        User user = findUserOrThrow(id);
+
+        if (request.username() != null && !request.username().isBlank()) {
+            user.setName(request.username());
+        }
+        if (request.email() != null && !request.email().isBlank()) {
+            user.setEmail(request.email());
+        }
+
+        log.info("User yeniləndi: id={}", user.getId());
+        return UserMapper.toResponse(userRepository.save(user));
     }
 
     @Override
