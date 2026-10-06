@@ -13,6 +13,9 @@ import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryTaskRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryUserRepository;
+import az.training.taskmanagement.repository.sortedinmemory.SortedInMemoryTaskRepository;
+import az.training.taskmanagement.service.NoOpNotificationService;
+import az.training.taskmanagement.service.NotificationService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 import az.training.taskmanagement.service.impl.TaskServiceImpl;
@@ -30,11 +33,11 @@ public class Main {
     public static void main(String[] args) {
         // 1) Repository qatı (in-memory implementasiya)
         UserRepository userRepository = new InMemoryUserRepository();
-        TaskRepository taskRepository = new InMemoryTaskRepository();
-
+        TaskRepository taskRepository = new SortedInMemoryTaskRepository();
+        NotificationService notificationService = new NoOpNotificationService();
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserServiceImpl(userRepository);
-        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository);
+        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository,notificationService);
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
@@ -54,6 +57,7 @@ public class Main {
         // PATCH nümunəsi (yalnız status dəyişir)
         taskController.update(t2.id(), new UpdateTaskRequest(null, null, TaskStatus.DONE, null));
         System.out.println("\nYenilənmiş task: " + taskController.getById(t2.id()));
+        System.out.println(taskController.getAll());
 
         // Xəta ssenarisi
         System.out.println("\nXəta ssenarisi:");
