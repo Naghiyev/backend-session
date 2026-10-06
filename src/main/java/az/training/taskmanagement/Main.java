@@ -13,6 +13,9 @@ import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryTaskRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryUserRepository;
+import az.training.taskmanagement.repository.inmemory.SortedInMemoryTaskRepository;
+import az.training.taskmanagement.service.NoOpNotificationService;
+import az.training.taskmanagement.service.NotificationService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 import az.training.taskmanagement.service.impl.TaskServiceImpl;
@@ -20,7 +23,7 @@ import az.training.taskmanagement.service.impl.UserServiceImpl;
 
 /**
  * Lesson 2 demo — layered architecture.
- *
+ * <p>
  * Diqqət et: burada qatları ƏL İLƏ quraşdırırıq (manual dependency injection).
  * Controller -> Service -> Repository zənciri interface-lər üzərindən bağlanır.
  * Lesson 4-də Spring bu "wiring"-i avtomatik edəcək.
@@ -31,10 +34,12 @@ public class Main {
         // 1) Repository qatı (in-memory implementasiya)
         UserRepository userRepository = new InMemoryUserRepository();
         TaskRepository taskRepository = new InMemoryTaskRepository();
+        TaskRepository storedMemory = new SortedInMemoryTaskRepository();
+        NotificationService notificationService = new NoOpNotificationService();
 
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserServiceImpl(userRepository);
-        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository);
+        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository, notificationService);
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
