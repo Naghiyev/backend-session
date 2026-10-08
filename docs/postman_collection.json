@@ -5,55 +5,135 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base", "value": "http://localhost:8080" }
+    {
+      "key": "base",
+      "value": "http://localhost:8080"
+    }
   ],
   "item": [
     {
       "name": "Create user",
       "request": {
         "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
         "url": "{{base}}/users",
-        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Darya\",\n  \"email\": \"darya@example.com\"\n}" }
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Darya\",\n  \"email\": \"darya@example.com\"\n}"
+        }
       }
     },
     {
       "name": "Get user by id",
-      "request": { "method": "GET", "url": "{{base}}/users/1" }
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/users/1"
+      }
     },
     {
       "name": "Create task",
       "request": {
         "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
         "url": "{{base}}/tasks",
-        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Backend syllabus hazirla\",\n  \"description\": \"8 derslik plan\",\n  \"priority\": \"HIGH\",\n  \"userId\": 1\n}" }
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Backend syllabus hazirla\",\n  \"description\": \"8 derslik plan\",\n  \"priority\": \"HIGH\",\n  \"userId\": 1\n}"
+        }
       }
     },
     {
       "name": "List tasks",
-      "request": { "method": "GET", "url": "{{base}}/tasks" }
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/tasks"
+      }
     },
     {
       "name": "Get task by id",
-      "request": { "method": "GET", "url": "{{base}}/tasks/1" }
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/tasks/1"
+      }
     },
     {
       "name": "Update task (PATCH)",
       "request": {
         "method": "PATCH",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
         "url": "{{base}}/tasks/1",
-        "body": { "mode": "raw", "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}" }
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+        }
       }
     },
     {
       "name": "User tasks",
-      "request": { "method": "GET", "url": "{{base}}/users/1/tasks" }
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/users/1/tasks"
+      }
     },
     {
       "name": "Delete task",
-      "request": { "method": "DELETE", "url": "{{base}}/tasks/1" }
+      "request": {
+        "method": "DELETE",
+        "url": "{{base}}/tasks/1"
+      }
+    },
+    {
+      "name": "Create category",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base}}/category",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Seyidxanim\"\n}"
+        }
+      }
+    },
+    {
+      "name": "List categories",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/categories"
+      }
+    },
+    {
+      "name": "Get category by id",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/categories/1"
+      }
+    },
+    {
+      "name": "Delete category",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base}}/categories/1"
+      }
     }
   ]
 }

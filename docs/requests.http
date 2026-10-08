@@ -8,7 +8,10 @@
 POST {{base}}/users
 Content-Type: application/json
 
-{ "name": "Darya", "email": "darya@example.com" }
+{
+  "name": "Darya",
+  "email": "darya@example.com"
+}
 
 ### 2. User-i al
 GET {{base}}/users/1
@@ -17,7 +20,12 @@ GET {{base}}/users/1
 POST {{base}}/tasks
 Content-Type: application/json
 
-{ "title": "Backend syllabus hazırla", "description": "8 dərslik plan", "priority": "HIGH", "userId": 1 }
+{
+  "title": "Backend syllabus hazırla",
+  "description": "8 dərslik plan",
+  "priority": "HIGH",
+  "userId": 1
+}
 
 ### 4. Bütün task-lar
 GET {{base}}/tasks
@@ -32,10 +40,29 @@ GET {{base}}/tasks/1
 PATCH {{base}}/tasks/1
 Content-Type: application/json
 
-{ "status": "IN_PROGRESS" }
+{
+  "status": "IN_PROGRESS"
+}
 
 ### 8. User-in task-ları
 GET {{base}}/users/1/tasks
 
 ### 9. Task-ı sil
 DELETE {{base}}/tasks/1
+
+### 10. Category yarat
+POST {{base}}/categories
+Content-Type: application/json
+
+{
+  "name": "Seyidxanim"
+}
+
+### 11. Category-i al
+GET {{base}}/categories/1
+
+### 12. Bütün category-ler
+GET {{base}}/categories
+
+### 13. Category-i sil
+DELETE {{base}}/categories/1
