@@ -20,6 +20,11 @@ http://localhost:8080
 | 6 | GET    | `/tasks/{id}` | Task-ı al | `200 OK` |
 | 7 | PATCH  | `/tasks/{id}` | Task-ı qismən yenilə | `200 OK` |
 | 8 | DELETE | `/tasks/{id}` | Task-ı sil | `204 No Content` |
+| 9 | POST   | `/categories` | Kateqoriya yarat | `201 Created` |
+| 10 | GET   | `/categories` | Bütün kateqoriyalar | `200 OK` |
+| 11 | GET   | `/categories/{id}` | Kateqoriyanı al | `200 OK` |
+| 12 | PATCH | `/categories/{id}/deactivate` | Kateqoriyanı passiv et | `200 OK` |
+| 13 | DELETE | `/categories/{id}` | Kateqoriyanı sil | `204 No Content` |
 
 ## HTTP status kodları (bu API-də)
 
@@ -101,3 +106,74 @@ Response `404 Not Found`:
   "path": "/tasks/99"
 }
 ```
+
+## Category nümunələri
+
+### 9) POST /categories
+Request:
+```json
+{ "name": "İş", "description": "İşlə bağlı tapşırıqlar", "color": "#FF5733" }
+```
+Response `201 Created`:
+```json
+{
+  "id": 1,
+  "name": "İş",
+  "description": "İşlə bağlı tapşırıqlar",
+  "color": "#FF5733",
+  "active": true,
+  "createdAt": "2026-10-09T10:00:00"
+}
+```
+Xəta `400 Bad Request` (name boşdur):
+```json
+{
+  "timestamp": "2026-10-09T10:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "name boş ola bilməz",
+  "path": "/categories"
+}
+```
+Xəta `409 Conflict` (eyni adda kateqoriya):
+```json
+{
+  "timestamp": "2026-10-09T10:00:00",
+  "status": 409,
+  "error": "Conflict",
+  "message": "Bu kateqoriya artıq mövcuddur: İş",
+  "path": "/categories"
+}
+```
+
+### 10) GET /categories
+Response `200 OK`:
+```json
+[
+  { "id": 1, "name": "İş", "description": "İşlə bağlı tapşırıqlar", "color": "#FF5733", "active": true, "createdAt": "2026-10-09T10:00:00" },
+  { "id": 2, "name": "Təhsil", "description": "Öyrənmə tapşırıqları", "color": "#3498DB", "active": true, "createdAt": "2026-10-09T10:05:00" }
+]
+```
+
+### 11) GET /categories/99 — tapılmadı
+Response `404 Not Found`:
+```json
+{
+  "timestamp": "2026-10-09T10:00:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Category tapılmadı: id=99",
+  "path": "/categories/99"
+}
+```
+
+### 12) PATCH /categories/2/deactivate
+Request body yoxdur.
+
+Response `200 OK`:
+```json
+{ "id": 2, "name": "Təhsil", "description": "Öyrənmə tapşırıqları", "color": "#3498DB", "active": false, "createdAt": "2026-10-09T10:05:00" }
+```
+
+### 13) DELETE /categories/1
+Response `204 No Content` — body qaytarılmır.

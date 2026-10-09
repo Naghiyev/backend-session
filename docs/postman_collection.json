@@ -54,6 +54,31 @@
     {
       "name": "Delete task",
       "request": { "method": "DELETE", "url": "{{base}}/tasks/1" }
+    },
+    {
+      "name": "Create category",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/categories",
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Is\",\n  \"description\": \"Isle bagli tapsiriqlar\",\n  \"color\": \"#FF5733\"\n}" }
+      }
+    },
+    {
+      "name": "List categories",
+      "request": { "method": "GET", "url": "{{base}}/categories" }
+    },
+    {
+      "name": "Get category by id",
+      "request": { "method": "GET", "url": "{{base}}/categories/1" }
+    },
+    {
+      "name": "Deactivate category",
+      "request": { "method": "PATCH", "url": "{{base}}/categories/1/deactivate" }
+    },
+    {
+      "name": "Delete category",
+      "request": { "method": "DELETE", "url": "{{base}}/categories/1" }
     }
   ]
 }
