@@ -1,5 +1,6 @@
 package az.training.taskmanagement.repository;
 
+import az.training.taskmanagement.model.Category;
 import az.training.taskmanagement.model.Task;
 
 import java.util.ArrayList;
@@ -40,6 +41,15 @@ public class TaskRepository {
         return result;
     }
 
+    public List<Task> findByCategoryId(Long categoryId){
+        List<Task> result = new ArrayList<>();
+        for (Task task : storage.values()){
+            if (task.getCategoryId().equals(categoryId)){
+                result.add(task);
+            }
+        }
+        return result;
+    }
     public void deleteById(Long id) {
         storage.remove(id);
     }

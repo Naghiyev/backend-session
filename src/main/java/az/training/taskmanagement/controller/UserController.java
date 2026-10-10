@@ -2,6 +2,7 @@ package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
 import az.training.taskmanagement.dto.TaskResponse;
+import az.training.taskmanagement.dto.UpdateUserRequest;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
@@ -50,4 +51,8 @@ public class UserController {
     public void delete(Long id) {
         userService.deleteUser(id);
     }
+
+//    PATCH/users/{id}
+    public UserResponse updateUser(Long id , UpdateUserRequest request) { return userService.updateUser(id,request); }
+
 }

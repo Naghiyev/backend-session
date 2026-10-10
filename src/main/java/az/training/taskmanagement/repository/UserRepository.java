@@ -34,6 +34,12 @@ public class UserRepository {
         return storage.values().stream()
                 .anyMatch(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email));
     }
+    public Optional<User> findByEmail(String email) {
+        return storage.values().stream()
+                .filter(u -> u.getEmail() != null
+                        && u.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+    }
 
     public void deleteById(Long id) {
         storage.remove(id);
