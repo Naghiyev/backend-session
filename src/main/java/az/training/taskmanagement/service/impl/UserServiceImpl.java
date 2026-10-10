@@ -50,6 +50,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserResponse> searchUsers(String name) {
+        return userRepository.findAll().stream()
+                .filter(u -> name == null || name.isBlank()
+                        || (u.getName() != null
+                        && u.getName().toLowerCase().contains(name.toLowerCase())))
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     public void deleteUser(Long id) {
         findUserOrThrow(id);
         userRepository.deleteById(id);
