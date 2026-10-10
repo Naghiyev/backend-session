@@ -1,7 +1,7 @@
 package az.training.taskmanagement.service;
 
 import az.training.taskmanagement.model.User;
-import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.repository.inMemory.InMemoryUserRepository;
 
 import java.util.List;
 
@@ -13,9 +13,9 @@ import java.util.List;
  */
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final InMemoryUserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(InMemoryUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
