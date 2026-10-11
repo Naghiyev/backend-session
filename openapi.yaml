@@ -12,6 +12,7 @@ servers:
 tags:
   - name: Users
   - name: Tasks
+  - name: Categories
 paths:
   /users:
     post:
@@ -150,6 +151,127 @@ paths:
           description: Silindi (məzmun yoxdur)
         '404':
           description: Task tapılmadı
+  /categories:
+    post:
+      tags: [Categories]
+      summary: Yeni category yarat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateCategoryRequest' }
+      responses:
+        '201':
+          description: Category yaradıldı
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '400':
+          description: Yanlış input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+        '409':
+          description: Bu adda category artıq mövcuddur
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+    get:
+      tags: [Categories]
+      summary: Bütün category-lər
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CategoryResponse' }
+  /categories/{id}:
+    get:
+      tags: [Categories]
+      summary: Category-ni id ilə al
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '404':
+          description: Category tapılmadı
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+    put:
+      tags: [Categories]
+      summary: Category-ni tam yenilə
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateCategoryRequest' }
+      responses:
+        '200':
+          description: Yeniləndi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '400':
+          description: Yanlış input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+        '404':
+          description: Category tapılmadı
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+        '409':
+          description: Bu adda category artıq mövcuddur
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+    delete:
+      tags: [Categories]
+      summary: Category-ni sil
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Silindi (məzmun yoxdur)
+        '404':
+          description: Category tapılmadı
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+        '409':
+          description: Category-yə aid task-lar var, silinə bilməz
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+  /categories/{id}/tasks:
+    get:
+      tags: [Categories]
+      summary: Category-nin bütün task-larını al
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TaskResponse' }
+        '404':
+          description: Category tapılmadı
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
 components:
   parameters:
     IdParam:
@@ -186,6 +308,7 @@ components:
         description: { type: string, example: "8 dərslik plan" }
         priority: { $ref: '#/components/schemas/Priority' }
         userId: { type: integer, format: int64, example: 1 }
+        categoryId: { type: integer, format: int64, nullable: true, example: 1 }
     UpdateTaskRequest:
       type: object
       properties:
@@ -202,8 +325,27 @@ components:
         status: { $ref: '#/components/schemas/TaskStatus' }
         priority: { $ref: '#/components/schemas/Priority' }
         userId: { type: integer, format: int64, example: 1 }
+        categoryId: { type: integer, format: int64, nullable: true, example: 1 }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+    CreateCategoryRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, maxLength: 50, example: "Work" }
+        description: { type: string, example: "İş tapşırıqları" }
+    UpdateCategoryRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, maxLength: 50, example: "Work" }
+        description: { type: string, example: "İş və layihə tapşırıqları" }
+    CategoryResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: "Work" }
+        description: { type: string, example: "İş tapşırıqları" }
     ApiError:
       type: object
       properties:

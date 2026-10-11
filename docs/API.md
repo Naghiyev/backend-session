@@ -20,6 +20,12 @@ http://localhost:8080
 | 6 | GET    | `/tasks/{id}` | Task-ı al | `200 OK` |
 | 7 | PATCH  | `/tasks/{id}` | Task-ı qismən yenilə | `200 OK` |
 | 8 | DELETE | `/tasks/{id}` | Task-ı sil | `204 No Content` |
+| 9 | POST   | `/categories` | Category yarat | `201 Created` |
+| 10 | GET   | `/categories` | Bütün category-lər | `200 OK` |
+| 11 | GET   | `/categories/{id}` | Category-ni al | `200 OK` |
+| 12 | PUT   | `/categories/{id}` | Category-ni tam yenilə | `200 OK` |
+| 13 | DELETE | `/categories/{id}` | Category-ni sil | `204 No Content` |
+| 14 | GET   | `/categories/{id}/tasks` | Category-nin task-ları | `200 OK` |
 
 ## HTTP status kodları (bu API-də)
 
@@ -100,4 +106,86 @@ Response `404 Not Found`:
   "message": "Task tapılmadı: id=99",
   "path": "/tasks/99"
 }
+```
+### 9) POST /categories
+Request:
+```json
+{ "name": "Work", "description": "İş tapşırıqları" }
+```
+Response `201 Created`:
+```json
+{ "id": 1, "name": "Work", "description": "İş tapşırıqları" }
+```
+Xəta `400 Bad Request` (boş ad):
+```json
+{
+  "timestamp": "2026-09-04T10:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "name: boş ola bilməz",
+  "path": "/categories"
+}
+```
+Xəta `409 Conflict` (ad təkrarı):
+```json
+{
+  "timestamp": "2026-09-04T10:00:00",
+  "status": 409,
+  "error": "Conflict",
+  "message": "Bu adda category artıq mövcuddur: work",
+  "path": "/categories"
+}
+```
+
+### 10) GET /categories
+Response `200 OK`:
+```json
+[
+  { "id": 1, "name": "Work", "description": "İş tapşırıqları" },
+  { "id": 2, "name": "Study", "description": "Öyrənmə" }
+]
+```
+
+### 11) GET /categories/99 — tapılmadı
+Response `404 Not Found`:
+```json
+{
+  "timestamp": "2026-09-04T10:00:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Category tapılmadı: id=99",
+  "path": "/categories/99"
+}
+```
+
+### 12) PUT /categories/2
+Request:
+```json
+{ "name": "Study", "description": "Java və Spring öyrənmə" }
+```
+Response `200 OK`:
+```json
+{ "id": 2, "name": "Study", "description": "Java və Spring öyrənmə" }
+```
+
+### 13) DELETE /categories/3
+Response `204 No Content` — body qaytarılmır.
+
+Xəta `409 Conflict` (category-yə aid task-lar var):
+```json
+{
+  "timestamp": "2026-09-04T10:00:00",
+  "status": 409,
+  "error": "Conflict",
+  "message": "Category silinə bilməz, ona aid task-lar var: id=1",
+  "path": "/categories/1"
+}
+```
+
+### 14) GET /categories/1/tasks
+Response `200 OK`:
+```json
+[
+  { "id": 1, "title": "Backend syllabus hazırla", "status": "TODO", "priority": "HIGH", "userId": 1, "categoryId": 1 }
+]
 ```

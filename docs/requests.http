@@ -39,3 +39,27 @@ GET {{base}}/users/1/tasks
 
 ### 9. Task-ı sil
 DELETE {{base}}/tasks/1
+
+### 10. Category yarat
+POST {{base}}/categories
+Content-Type: application/json
+
+{ "name": "Work", "description": "İş tapşırıqları" }
+
+### 11. Bütün category-lər
+GET {{base}}/categories
+
+### 12. Category-ni al
+GET {{base}}/categories/1
+
+### 13. Category-ni yenilə (PUT)
+PUT {{base}}/categories/1
+Content-Type: application/json
+
+{ "name": "Work", "description": "İş və layihə tapşırıqları" }
+
+### 14. Category-nin task-ları
+GET {{base}}/categories/1/tasks
+
+### 15. Category-ni sil
+DELETE {{base}}/categories/1
