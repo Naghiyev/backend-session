@@ -54,6 +54,40 @@
     {
       "name": "Delete task",
       "request": { "method": "DELETE", "url": "{{base}}/tasks/1" }
+    },
+    {
+      "name": "Create category",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/categories",
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Work\",\n  \"description\": \"Is tapshiriqlari\"\n}" }
+      }
+    },
+    {
+      "name": "List categories",
+      "request": { "method": "GET", "url": "{{base}}/categories" }
+    },
+    {
+      "name": "Get category by id",
+      "request": { "method": "GET", "url": "{{base}}/categories/1" }
+    },
+    {
+      "name": "Update category (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/categories/1",
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Work\",\n  \"description\": \"Is ve layihe tapshiriqlari\"\n}" }
+      }
+    },
+    {
+      "name": "Category tasks",
+      "request": { "method": "GET", "url": "{{base}}/categories/1/tasks" }
+    },
+    {
+      "name": "Delete category",
+      "request": { "method": "DELETE", "url": "{{base}}/categories/1" }
     }
   ]
 }
