@@ -14,6 +14,25 @@ tags:
   - name: Tasks
 paths:
   /users:
+    get:
+      tags: [Users]
+      summary: Bütün userler (email filtri ile)
+      parameters:
+        - name: email
+          in: query
+          required: false
+          description: Emailin hissesi (böyük/kiçik hərfə həssas deyil)
+          schema:
+           type: string
+           example: gmail
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/UserResponse' }
     post:
       tags: [Users]
       summary: Yeni user yarat

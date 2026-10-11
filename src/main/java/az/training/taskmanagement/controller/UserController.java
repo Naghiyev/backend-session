@@ -2,10 +2,13 @@ package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
 import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Lesson 5 — fundamental endpoints only.
@@ -24,6 +27,11 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
+    }
+
+    @GetMapping
+    public List <UserResponse> getAll(@RequestParam (required = false) String email){
+        return userService.getAllUsers(email);
     }
 
     @GetMapping("/{id}")

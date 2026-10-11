@@ -31,6 +31,13 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
+    public List<User> findByEmail(String email){
+        return storage.values().stream().filter(u -> u.getEmail() != null &&
+                u.getEmail().toLowerCase().contains(email.toLowerCase()))
+                .toList();
+    }
+
+    @Override
     public List<User> findAll() {
         return new ArrayList<>(storage.values());
     }

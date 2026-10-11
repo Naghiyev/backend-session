@@ -15,7 +15,7 @@ public interface UserService {
 
     UserResponse getUserById(Long id);
 
-    List<UserResponse> getAllUsers();
+    List<UserResponse> getAllUsers(String email);
 
     void deleteUser(Long id);
 }

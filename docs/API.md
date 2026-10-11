@@ -71,7 +71,7 @@ Response `201 Created`:
 {
   "id": 1,
   "title": "Backend syllabus hazırla",
-  "description": "8 dərslik plan",
+  "description": "Backend syllabus hazırlan",
   "status": "TODO",
   "priority": "HIGH",
   "userId": 1,
