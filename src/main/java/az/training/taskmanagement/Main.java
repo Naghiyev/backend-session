@@ -1,20 +1,21 @@
 package az.training.taskmanagement;
 
+import az.training.taskmanagement.controller.CategoryController;
 import az.training.taskmanagement.controller.TaskController;
 import az.training.taskmanagement.controller.UserController;
-import az.training.taskmanagement.dto.CreateTaskRequest;
-import az.training.taskmanagement.dto.CreateUserRequest;
-import az.training.taskmanagement.dto.UpdateTaskRequest;
-import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.dto.*;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.repository.inmemory.InMemoryCategoryRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryTaskRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryUserRepository;
-import az.training.taskmanagement.service.TaskService;
-import az.training.taskmanagement.service.UserService;
+import az.training.taskmanagement.repository.inmemory.SortedInMemoryTaskRepository;
+import az.training.taskmanagement.service.*;
+import az.training.taskmanagement.service.impl.CategoryServiceImpl;
 import az.training.taskmanagement.service.impl.TaskServiceImpl;
 import az.training.taskmanagement.service.impl.UserServiceImpl;
 
@@ -30,25 +31,39 @@ public class Main {
     public static void main(String[] args) {
         // 1) Repository qatı (in-memory implementasiya)
         UserRepository userRepository = new InMemoryUserRepository();
-        TaskRepository taskRepository = new InMemoryTaskRepository();
+//        TaskRepository taskRepository = new InMemoryTaskRepository();
+        TaskRepository taskRepository =
+                new SortedInMemoryTaskRepository();
+        CategoryRepository categoryRepository = new InMemoryCategoryRepository();
+
 
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserServiceImpl(userRepository);
-        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository);
+        CategoryService categoryService = new CategoryServiceImpl(categoryRepository);
+        NotificationService notificationService = new NoOpNotificationService();
+        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository, categoryRepository,notificationService);
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
         TaskController taskController = new TaskController(taskService);
+        CategoryController categoryController = new CategoryController(categoryService,taskService);
 
         System.out.println("=== Task Management API - Lesson 2 (layered) ===\n");
 
         UserResponse darya = userController.create(new CreateUserRequest("Darya", "darya@example.com"));
         UserResponse ali = userController.create(new CreateUserRequest("Ali", "ali@example.com"));
         System.out.println("User-lər: " + userController.getAll());
+        CategoryResponse javaCategory = categoryController.create(new CreateCategoryRequest("Java"));
 
-        taskController.create(new CreateTaskRequest("Layered refactor", "controller/service/repo", Priority.HIGH, darya.id()));
-        var t2 = taskController.create(new CreateTaskRequest("DTO mapping öyrən", null, Priority.MEDIUM, darya.id()));
-        taskController.create(new CreateTaskRequest("SOLID təkrar", null, Priority.LOW, ali.id()));
+        CategoryResponse springCategory = categoryController.create(new CreateCategoryRequest("Spring"));
+
+        CategoryResponse databaseCategory = categoryController.create(new CreateCategoryRequest("Database"));
+
+        System.out.println("Category-ler: " + categoryController.getAll());
+
+        taskController.create(new CreateTaskRequest("Layered refactor", "controller/service/repo", Priority.HIGH, darya.id(),javaCategory.id()));
+        var t2 = taskController.create(new CreateTaskRequest("DTO mapping öyrən", null, Priority.MEDIUM, darya.id(), springCategory.id()));
+        taskController.create(new CreateTaskRequest("SOLID təkrar", null, Priority.LOW, ali.id(), databaseCategory.id()));
         System.out.println("\nDarya-nın task-ları: " + userController.getUserTasks(darya.id()));
 
         // PATCH nümunəsi (yalnız status dəyişir)

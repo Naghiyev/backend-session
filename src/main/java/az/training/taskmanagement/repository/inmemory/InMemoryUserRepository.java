@@ -1,5 +1,8 @@
 package az.training.taskmanagement.repository.inmemory;
 
+import az.training.taskmanagement.dto.UpdateUserRequest;
+import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 
@@ -40,8 +43,10 @@ public class InMemoryUserRepository implements UserRepository {
                 .anyMatch(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email));
     }
 
+
     @Override
     public void deleteById(Long id) {
         storage.remove(id);
     }
+
 }

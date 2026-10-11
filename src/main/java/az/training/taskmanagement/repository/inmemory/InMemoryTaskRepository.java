@@ -44,6 +44,16 @@ public class InMemoryTaskRepository implements TaskRepository {
         }
         return result;
     }
+    @Override
+    public List<Task> findByCategoryId(Long categoryId){
+        List<Task> result = new ArrayList<>();
+        for (Task task : storage.values()){
+            if (task.getCategoryId().equals(categoryId)){
+                result.add(task);
+            }
+        }
+        return result;
+    }
 
     @Override
     public void deleteById(Long id) {

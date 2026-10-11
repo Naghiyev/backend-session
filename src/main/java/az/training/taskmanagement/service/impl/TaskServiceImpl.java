@@ -6,9 +6,13 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Category;
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.NotificationService;
 import az.training.taskmanagement.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -18,10 +22,14 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
+    private final NotificationService notificationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository,CategoryRepository categoryRepository, NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -30,10 +38,12 @@ public class TaskServiceImpl implements TaskService {
             throw new ValidationException("title boş ola bilməz");
         }
         // Task yaratmazdan əvvəl user-in mövcudluğunu yoxla.
-        if (userRepository.findById(request.userId()).isEmpty()) {
-            throw ResourceNotFoundException.of("User", request.userId());
-        }
+//        if (userRepository.findById(request.userId()).isEmpty()) {
+//            throw ResourceNotFoundException.of("User", request.userId());
+//        }
+        findUserOrThrow(request.userId());
         Task saved = taskRepository.save(TaskMapper.toEntity(request));
+        notificationService.notifyTaskCreated(saved);
         return TaskMapper.toResponse(saved);
     }
 
@@ -51,12 +61,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResponse> getTasksByUser(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw ResourceNotFoundException.of("User", userId);
-        }
+//        if (userRepository.findById(userId).isEmpty()) {
+//            throw ResourceNotFoundException.of("User", userId);
+//        }
+        findUserOrThrow(userId);
         return taskRepository.findByUserId(userId).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
+    }
+    @Override
+    public List<TaskResponse> getTasksByCategory(Long categoryId){
+        findCategoryOrThrow(categoryId);
+        return taskRepository.findByCategoryId(categoryId).stream()
+                .map(TaskMapper :: toResponse).toList();
     }
 
     @Override
@@ -87,5 +104,12 @@ public class TaskServiceImpl implements TaskService {
     private Task findTaskOrThrow(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Task", id));
+    }
+
+    private User findUserOrThrow(Long id){
+        return userRepository.findById(id).orElseThrow(()-> ResourceNotFoundException.of("User",id));
+    }
+    private Category findCategoryOrThrow(Long id){
+        return categoryRepository.findById(id).orElseThrow(()->ResourceNotFoundException.of("Category",id));
     }
 }

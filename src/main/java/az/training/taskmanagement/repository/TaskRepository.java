@@ -15,5 +15,7 @@ public interface TaskRepository {
 
     List<Task> findByUserId(Long userId);
 
+    List<Task> findByCategoryId(Long categoryId);
+
     void deleteById(Long id);
 }
