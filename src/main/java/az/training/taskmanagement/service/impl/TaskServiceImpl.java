@@ -98,7 +98,6 @@ public class TaskServiceImpl implements TaskService {
         if (request.priority() != null) {
             task.setPriority(request.priority());
         }
-        // updatedAt @PreUpdate ilə avtomatik yenilənir
         return TaskMapper.toResponse(taskRepository.save(task));
     }
 
@@ -113,5 +112,16 @@ public class TaskServiceImpl implements TaskService {
     private Task findTaskOrThrow(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Task", id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getTasksByStatus(TaskStatus status) {
+        if (status == null) {
+            throw new ValidationException("Status boş ola bilməz");
+        }
+        return taskRepository.findByStatus(status).stream()
+                .map(TaskMapper::toResponse)
+                .toList();
     }
 }
