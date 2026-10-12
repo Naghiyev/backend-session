@@ -12,6 +12,7 @@ servers:
 tags:
   - name: Users
   - name: Tasks
+  - name: Categories
 paths:
   /users:
     post:
@@ -150,6 +151,69 @@ paths:
           description: Silindi (məzmun yoxdur)
         '404':
           description: Task tapılmadı
+  /categories:
+    post:
+      tags: [Categories]
+      summary: Yeni category yarat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category yaradildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: Yanlış input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+        '409':
+          description: CategoryName artiq movcuddur
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+    get:
+      tags: [Categories]
+      summary: Bütün category-ler
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CategoryResponse' }
+  /categories/{id}:
+    get:
+      tags: [Categories]
+      summary: Category-ni id ile al
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '404':
+          description: Category tapılmadı
+    delete:
+      tags: [ Categories ]
+      summary: Category-ni sil
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Silindi (məzmun yoxdur)
+        '404':
+          description: Category tapılmadı
+
 components:
   parameters:
     IdParam:
@@ -180,12 +244,13 @@ components:
         email: { type: string, example: "darya@example.com" }
     CreateTaskRequest:
       type: object
-      required: [title, userId]
+      required: [title, userId, categoryId]
       properties:
         title: { type: string, example: "Backend syllabus hazırla" }
         description: { type: string, example: "8 dərslik plan" }
         priority: { $ref: '#/components/schemas/Priority' }
         userId: { type: integer, format: int64, example: 1 }
+        categoryId: {type : integer, format: int64, example: 1}
     UpdateTaskRequest:
       type: object
       properties:
@@ -202,8 +267,27 @@ components:
         status: { $ref: '#/components/schemas/TaskStatus' }
         priority: { $ref: '#/components/schemas/Priority' }
         userId: { type: integer, format: int64, example: 1 }
+        categoryId: { type: integer, format: int64, example: 1 }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+    CreateCategoryRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+          example: "Java"
+
+    CategoryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Java"
     ApiError:
       type: object
       properties:

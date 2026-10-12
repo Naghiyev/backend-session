@@ -20,6 +20,10 @@ http://localhost:8080
 | 6 | GET    | `/tasks/{id}` | Task-ı al | `200 OK` |
 | 7 | PATCH  | `/tasks/{id}` | Task-ı qismən yenilə | `200 OK` |
 | 8 | DELETE | `/tasks/{id}` | Task-ı sil | `204 No Content` |
+| 9 | POST   | `/categories` | Category yarat | `201 Created` |
+| 10 | GET    | `/categories` | Bütün category-ler | `200 OK` |
+| 11 | GET    | `/categories/{id}` | Category-ni al | `200 OK` |
+| 12 | DELETE | `/categories/{id}` | Category-ni sil | `204 No Content` |
 
 ## HTTP status kodları (bu API-də)
 
@@ -61,10 +65,21 @@ Xəta `409 Conflict` (email təkrarı):
 }
 ```
 
+### 1) POST /categories
+Request:
+```json
+{ "name": "Java"}
+```
+Response `201 Created`:
+```json
+{ "id": 1, "name": "Java" }
+```
+
+
 ### 4) POST /tasks
 Request:
 ```json
-{ "title": "Backend syllabus hazırla", "description": "8 dərslik plan", "priority": "HIGH", "userId": 1 }
+{ "title": "Backend syllabus hazırla", "description": "8 dərslik plan", "priority": "HIGH", "userId": 1, "categoryId": 1 }
 ```
 Response `201 Created`:
 ```json
@@ -75,6 +90,7 @@ Response `201 Created`:
   "status": "TODO",
   "priority": "HIGH",
   "userId": 1,
+  "categoryId": 1,
   "createdAt": "2026-09-04T10:00:00",
   "updatedAt": "2026-09-04T10:00:00"
 }
