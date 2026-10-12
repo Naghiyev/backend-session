@@ -7,8 +7,10 @@ import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.NotificationService;
 import az.training.taskmanagement.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -18,10 +20,12 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -34,6 +38,8 @@ public class TaskServiceImpl implements TaskService {
             throw ResourceNotFoundException.of("User", request.userId());
         }
         Task saved = taskRepository.save(TaskMapper.toEntity(request));
+        notificationService.notificationTaskCreate(saved);
+
         return TaskMapper.toResponse(saved);
     }
 
@@ -62,6 +68,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
         Task task = findTaskOrThrow(id);
+
+        TaskStatus oldTaskStatus = task.getStatus();
+
         if (request.title() != null) {
             task.setTitle(request.title());
         }
@@ -75,7 +84,11 @@ public class TaskServiceImpl implements TaskService {
             task.setPriority(request.priority());
         }
         task.setUpdatedAt(LocalDateTime.now());
-        return TaskMapper.toResponse(taskRepository.save(task));
+        Task saved= taskRepository.save(task);
+        if (saved.getStatus()!=oldTaskStatus){
+            notificationService.notificationStatusChange(saved, oldTaskStatus);
+        }
+        return TaskMapper.toResponse(saved);
     }
 
     @Override

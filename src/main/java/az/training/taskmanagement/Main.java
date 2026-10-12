@@ -13,8 +13,11 @@ import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryTaskRepository;
 import az.training.taskmanagement.repository.inmemory.InMemoryUserRepository;
+import az.training.taskmanagement.repository.inmemory.SortedInMemoryTaskRepository;
+import az.training.taskmanagement.service.NotificationService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
+import az.training.taskmanagement.service.impl.NoOpNotificationService;
 import az.training.taskmanagement.service.impl.TaskServiceImpl;
 import az.training.taskmanagement.service.impl.UserServiceImpl;
 
@@ -32,9 +35,12 @@ public class Main {
         UserRepository userRepository = new InMemoryUserRepository();
         TaskRepository taskRepository = new InMemoryTaskRepository();
 
+        TaskRepository taskRepository1=new SortedInMemoryTaskRepository();
+        NotificationService notificationService=new NoOpNotificationService();
+
         // 2) Service qatı (business logic) - yalnız interface-dən asılıdır
         UserService userService = new UserServiceImpl(userRepository);
-        TaskService taskService = new TaskServiceImpl(taskRepository, userRepository);
+        TaskService taskService = new TaskServiceImpl(taskRepository1, userRepository ,notificationService);
 
         // 3) Controller qatı (boundary)
         UserController userController = new UserController(userService, taskService);
@@ -48,8 +54,14 @@ public class Main {
 
         taskController.create(new CreateTaskRequest("Layered refactor", "controller/service/repo", Priority.HIGH, darya.id()));
         var t2 = taskController.create(new CreateTaskRequest("DTO mapping öyrən", null, Priority.MEDIUM, darya.id()));
+        var t3 = taskController.create(new CreateTaskRequest("DTO mapping öyrənme", null, Priority.HIGH, darya.id()));
+
         taskController.create(new CreateTaskRequest("SOLID təkrar", null, Priority.LOW, ali.id()));
         System.out.println("\nDarya-nın task-ları: " + userController.getUserTasks(darya.id()));
+
+        System.out.println("\nDarya-nın task-ları prioritete gore:");
+        userController.getUserTasks(darya.id()).forEach(t ->
+                System.out.println("  " + t.priority() + " - " + t.title()));
 
         // PATCH nümunəsi (yalnız status dəyişir)
         taskController.update(t2.id(), new UpdateTaskRequest(null, null, TaskStatus.DONE, null));
