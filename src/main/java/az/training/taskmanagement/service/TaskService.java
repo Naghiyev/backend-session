@@ -15,7 +15,9 @@ public interface TaskService {
 
     List<TaskResponse> getAllTasks();
 
-    /** status null olduqda bütün task-lar, əks halda yalnız həmin statusdakılar. */
+    /**
+     * status null olduqda bütün task-lar, əks halda yalnız həmin statusdakılar.
+     */
     List<TaskResponse> getTasks(TaskStatus status);
 
     List<TaskResponse> getTasksByUser(Long userId);
@@ -23,4 +25,6 @@ public interface TaskService {
     TaskResponse updateTask(Long id, UpdateTaskRequest request);
 
     void deleteTask(Long id);
+
+    List<TaskResponse> getTasksByStatus(TaskStatus status);
 }
