@@ -9,7 +9,7 @@ import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
-
+import az.training.taskmanagement.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,9 +28,11 @@ public class TaskService {
             throw new ValidationException("title boş ola bilməz");
         }
         // Task yaratmazdan əvvəl user-in mövcudluğunu yoxla.
-        if (userRepository.findById(request.userId()).isEmpty()) {
-            throw ResourceNotFoundException.of("User", request.userId());
-        }
+//        if (userRepository.findById(request.userId()).isEmpty()) {
+//            throw ResourceNotFoundException.of("User", request.userId());
+//        }
+        findUserOrThrow(request.userId());
+
         Task saved = taskRepository.save(TaskMapper.toEntity(request));
         return TaskMapper.toResponse(saved);
     }
@@ -46,9 +48,8 @@ public class TaskService {
     }
 
     public List<TaskResponse> getTasksByUser(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw ResourceNotFoundException.of("User", userId);
-        }
+        findUserOrThrow(userId);
+        
         return taskRepository.findByUserId(userId).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
@@ -75,6 +76,9 @@ public class TaskService {
     public void deleteTask(Long id) {
         findTaskOrThrow(id);
         taskRepository.deleteById(id);
+    }
+    private User findUserOrThrow(Long id){
+        return userRepository.findById(id).orElseThrow(()-> ResourceNotFoundException.of("user" , id));
     }
 
     private Task findTaskOrThrow(Long id) {
