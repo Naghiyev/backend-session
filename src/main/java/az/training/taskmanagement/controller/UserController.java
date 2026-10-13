@@ -47,6 +47,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping
+    public List<UserResponse> getAll(@RequestParam(required = false) String name) {
+        return userService.searchUsers(name);
+    }
+
     @GetMapping("/{id}/tasks")
     public List<TaskResponse> getUserTasks(@PathVariable Long id) {
         return taskService.getTasksByUser(id);

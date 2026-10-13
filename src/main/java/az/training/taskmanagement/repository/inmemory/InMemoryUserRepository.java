@@ -45,4 +45,11 @@ public class InMemoryUserRepository implements UserRepository {
     public void deleteById(Long id) {
         storage.remove(id);
     }
+
+    @Override
+    public List<User> findUsersEqualsGivenName(String name) {
+        return storage.values().stream()
+                .filter(u -> u.getName() != null && u.getName().equalsIgnoreCase(name))
+                .toList();
+    }
 }
