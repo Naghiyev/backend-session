@@ -48,7 +48,13 @@ public class UserServiceImpl implements UserService {
                 .map(UserMapper::toResponse)
                 .toList();
     }
-
+    @Override
+    public List<String> getAllUsersName(String name) {
+        return userRepository.findAll().stream()
+                .map(User::getName).filter(userName -> name == null || name.isBlank()
+                        || userName.toLowerCase().contains(name.toLowerCase()))
+                .toList();
+    }
     @Override
     public void deleteUser(Long id) {
         findUserOrThrow(id);
