@@ -54,6 +54,27 @@
     {
       "name": "Delete task",
       "request": { "method": "DELETE", "url": "{{base}}/tasks/1" }
+    },
+    {
+      "name": "Create category",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base}}/categories",
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Math\"\n}" }
+      }
+    },
+    {
+      "name": "List categories",
+      "request": { "method": "GET", "url": "{{base}}/categories" }
+    },
+    {
+      "name": "Get category by id",
+      "request": { "method": "GET", "url": "{{base}}/categories/1" }
+    },
+    {
+      "name": "Delete category",
+      "request": { "method": "DELETE", "url": "{{base}}/categories/1" }
     }
   ]
 }
