@@ -101,3 +101,114 @@ Response `404 Not Found`:
   "path": "/tasks/99"
 }
 ```
+## Category endpoint-ləri
+
+### 1. POST /categories — yeni kateqoriya yarat
+
+Request:
+
+```http
+POST http://localhost:8080/categories
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "Java",
+  "description": "Java backend mövzuları"
+}
+```
+
+Uğurlu response: `201 Created`
+
+```json
+{
+  "id": 1,
+  "name": "Java",
+  "description": "Java backend mövzuları"
+}
+```
+
+### 2. GET /categories — bütün kateqoriyaları al
+
+Request:
+
+```http
+GET http://localhost:8080/categories
+```
+
+Uğurlu response: `200 OK`
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Java",
+    "description": "Java backend mövzuları"
+  },
+  {
+    "id": 2,
+    "name": "Database",
+    "description": "SQL və verilənlər bazaları"
+  }
+]
+```
+
+### 3. GET /categories/1 — ID ilə kateqoriya al
+
+Request:
+
+```http
+GET http://localhost:8080/categories/1
+```
+
+Uğurlu response: `200 OK`
+
+```json
+{
+  "id": 1,
+  "name": "Java",
+  "description": "Java backend mövzuları"
+}
+```
+
+Kateqoriya tapılmadıqda: `404 Not Found`.
+
+### 4. PUT /categories/1 — kateqoriyanı tam yenilə
+
+Request:
+
+```http
+PUT http://localhost:8080/categories/1
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "Spring Boot",
+  "description": "Spring Boot backend mövzuları"
+}
+```
+
+Uğurlu response: `200 OK`
+
+```json
+{
+  "id": 1,
+  "name": "Spring Boot",
+  "description": "Spring Boot backend mövzuları"
+}
+```
+
+### 5. DELETE /categories/1 — kateqoriyanı sil
+
+Request:
+
+```http
+DELETE http://localhost:8080/categories/1
+```
+
+Uğurlu response: `204 No Content`
+
+Bu status kodunda response body qaytarılmır.
+
