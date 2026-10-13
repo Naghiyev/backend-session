@@ -2,6 +2,8 @@ package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
+import az.training.taskmanagement.model.Priority;
+import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +31,10 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getAll() {
-        return taskService.getAllTasks();
+    public List<TaskResponse> getAll(@RequestParam(required = false) TaskStatus status,
+                                     @RequestParam(required = false) Priority priority,
+                                     @RequestParam(required = false) String title) {
+        return taskService.searchTasks(status, priority, title);
     }
 
     @GetMapping("/{id}")

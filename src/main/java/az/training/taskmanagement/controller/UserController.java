@@ -1,11 +1,15 @@
 package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Lesson 5 — fundamental endpoints only.
@@ -17,8 +21,22 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final TaskService taskService;
+
+    public UserController(UserService userService, TaskService taskService) {
         this.userService = userService;
+        this.taskService = taskService;
+    }
+
+    @GetMapping
+    public List<UserResponse> getAll(@RequestParam(required = false) String name,
+                                     @RequestParam(required = false) String email) {
+        return userService.searchUsers(name, email);
+    }
+
+    @GetMapping("/{id}/tasks")
+    public List<TaskResponse> getUserTasks(@PathVariable Long id) {
+        return taskService.getTasksByUser(id);
     }
 
     @PostMapping
