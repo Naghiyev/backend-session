@@ -6,6 +6,7 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
@@ -14,6 +15,7 @@ import az.training.taskmanagement.service.TaskService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @org.springframework.stereotype.Service
 public class TaskServiceImpl implements TaskService {
@@ -47,6 +49,18 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponse> getAllTasks() {
         return taskRepository.findAll().stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<TaskResponse> searchTasks(TaskStatus status, Priority priority, String title) {
+        String query = title == null || title.isBlank() ? null : title.trim().toLowerCase(Locale.ROOT);
+        return taskRepository.findAll().stream()
+                .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> priority == null || t.getPriority() == priority)
+                .filter(t -> query == null
+                        || (t.getTitle() != null && t.getTitle().toLowerCase(Locale.ROOT).contains(query)))
                 .map(TaskMapper::toResponse)
                 .toList();
     }

@@ -11,6 +11,7 @@ import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
 
 import java.util.List;
+import java.util.Locale;
 
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
@@ -47,6 +48,24 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public List<UserResponse> searchUsers(String name, String email) {
+        return userRepository.findAll().stream()
+                .filter(u -> isBlank(name) || containsIgnoreCase(u.getName(), name))
+                .filter(u -> isBlank(email) || email.trim().equalsIgnoreCase(u.getEmail()))
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    private static boolean containsIgnoreCase(String value, String query) {
+        return value != null
+                && value.toLowerCase(Locale.ROOT).contains(query.trim().toLowerCase(Locale.ROOT));
     }
 
     @Override
