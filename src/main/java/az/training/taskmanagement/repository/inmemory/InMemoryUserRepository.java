@@ -40,6 +40,12 @@ public class InMemoryUserRepository implements UserRepository {
         return storage.values().stream()
                 .anyMatch(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email));
     }
+    @Override
+    public List<User> findByName(String name){
+        return storage.values().stream().filter(u -> u.getName() != null &&
+                        u.getName().toLowerCase().contains(name.toLowerCase()))
+                .toList();
+    }
 
     @Override
     public void deleteById(Long id) {

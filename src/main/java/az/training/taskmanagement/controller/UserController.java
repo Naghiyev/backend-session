@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAllUsers();
+    public List<UserResponse> getAll(@RequestParam(required = false) String name) {
+        return userService.getAllUsers(name);
     }
 
     @GetMapping("/{id}/tasks")
