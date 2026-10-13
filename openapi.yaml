@@ -12,7 +12,67 @@ servers:
 tags:
   - name: Users
   - name: Tasks
+
+  - name: Category
+
 paths:
+  /categories:
+    post:
+      tags: [Categories]
+      summary: yeni category yarat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category yaradildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: yanlis input
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+        '409':
+          description: Category artiq movcuddur
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+  /categories/{id}:
+    get:
+      tags: [ Categories ]
+      summary: Category id ile al
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '404':
+          description: Category tapilmadi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
+    delete:
+      tags: [Categories]
+      summary: Category sil
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Silindi
+        '404':
+          description: Category tapılmadı
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiError' }
   /users:
     post:
       tags: [Users]
@@ -40,6 +100,7 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/ApiError' }
+
   /users/{id}:
     get:
       tags: [Users]
@@ -204,6 +265,16 @@ components:
         userId: { type: integer, format: int64, example: 1 }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+    CreateCategoryRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name: { type: string, example: "Math" }
+    CategoryResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: "Math" }
     ApiError:
       type: object
       properties:
