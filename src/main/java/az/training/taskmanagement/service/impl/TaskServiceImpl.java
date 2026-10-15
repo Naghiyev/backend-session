@@ -94,6 +94,21 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(id);
     }
 
+    public List<Task> searchTasks(String search) {
+
+        if (search == null || search.isBlank()) {
+            return taskRepository.findAll();
+        }
+
+        return taskRepository.findAll()
+                .stream()
+                .filter(task -> task.getTitle() != null
+                        && task.getTitle()
+                        .toLowerCase()
+                        .contains(search.trim().toLowerCase()))
+                .toList();
+    }
+
     private Task findTaskOrThrow(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Task", id));

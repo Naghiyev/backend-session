@@ -7,7 +7,7 @@ import java.util.Optional;
 
 /**
  * Repository abstraction.
- *
+ * <p>
  * Lesson 2: service artıq konkret saxlamadan asılı deyil, yalnız bu
  * interface-dən asılıdır (Dependency Inversion Principle - SOLID-in "D"-si).
  * Lesson 5-də bu interface Spring Data JPA ilə əvəz olunacaq.
@@ -23,4 +23,5 @@ public interface UserRepository {
     boolean existsByEmail(String email);
 
     void deleteById(Long id);
+
 }

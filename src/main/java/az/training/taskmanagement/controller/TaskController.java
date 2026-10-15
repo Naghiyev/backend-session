@@ -2,6 +2,7 @@ package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
+import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,11 @@ public class TaskController {
     @GetMapping
     public List<TaskResponse> getAll() {
         return taskService.getAllTasks();
+    }
+
+    @GetMapping("/search")
+    public List<Task> getAllTask(@RequestParam(required = false) String title) {
+        return taskService.searchTasks(title);
     }
 
     @GetMapping("/{id}")
