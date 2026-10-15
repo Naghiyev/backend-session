@@ -6,6 +6,7 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
@@ -52,9 +53,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getTasks(TaskStatus status) {
+    public List<TaskResponse> getTasks(TaskStatus status, Priority priority) {
         return taskRepository.findAll().stream()
                 .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> priority == null ||t.getPriority() == priority )
                 .map(TaskMapper::toResponse)
                 .toList();
     }
@@ -72,7 +74,30 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
         Task task = findTaskOrThrow(id);
+        if (request.title() == null || request.title().isBlank()) {
+            throw new ValidationException("PUT üçün title məcburidir");
+        }
+        if (request.status() == null) {
+            throw new ValidationException("PUT üçün status məcburidir");
+        }
+        if (request.priority() == null) {
+            throw new ValidationException("PUT üçün priority məcburidir");
+        }
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
+        task.setUpdatedAt(LocalDateTime.now());
+        return TaskMapper.toResponse(taskRepository.save(task));
+    }
+
+    @Override
+    public TaskResponse patchTask(Long id, UpdateTaskRequest request) {
+        Task task = findTaskOrThrow(id);
         if (request.title() != null) {
+            if (request.title().isBlank()) {
+                throw new ValidationException("title boş ola bilməz");
+            }
             task.setTitle(request.title());
         }
         if (request.description() != null) {
@@ -87,6 +112,7 @@ public class TaskServiceImpl implements TaskService {
         task.setUpdatedAt(LocalDateTime.now());
         return TaskMapper.toResponse(taskRepository.save(task));
     }
+
 
     @Override
     public void deleteTask(Long id) {
