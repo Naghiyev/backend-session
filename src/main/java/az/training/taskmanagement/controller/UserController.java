@@ -42,10 +42,10 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAllUsers();
-    }
+//    @GetMapping
+//    public List<UserResponse> getAll() {
+//        return userService.getAllUsers();
+//    }
 
     @GetMapping
     public List<UserResponse> getAll(@RequestParam(required = false) String name) {
