@@ -1,5 +1,6 @@
 package az.training.taskmanagement.repository.inmemory;
 
+import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 

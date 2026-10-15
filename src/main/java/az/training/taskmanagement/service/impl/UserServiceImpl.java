@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toResponse(findUserOrThrow(id));
     }
 
+
     @Override
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
@@ -54,6 +55,7 @@ public class UserServiceImpl implements UserService {
         findUserOrThrow(id);
         userRepository.deleteById(id);
     }
+
 
     private User findUserOrThrow(Long id) {
         return userRepository.findById(id)
