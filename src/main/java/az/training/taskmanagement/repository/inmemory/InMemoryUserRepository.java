@@ -3,10 +3,7 @@ package az.training.taskmanagement.repository.inmemory;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,6 +36,15 @@ public class InMemoryUserRepository implements UserRepository {
     public boolean existsByEmail(String email) {
         return storage.values().stream()
                 .anyMatch(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email));
+    }
+
+    @Override
+    public List<User> findByName(String name) {
+        String query = name.trim().toLowerCase(Locale.ROOT);
+        return storage.values().stream()
+                .filter(u -> u.getName() != null
+                        && u.getName().toLowerCase(Locale.ROOT).contains(query))
+                .toList();
     }
 
     @Override

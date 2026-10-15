@@ -22,5 +22,7 @@ public interface UserRepository {
 
     boolean existsByEmail(String email);
 
+    List<User> findByName(String name);
+
     void deleteById(Long id);
 }

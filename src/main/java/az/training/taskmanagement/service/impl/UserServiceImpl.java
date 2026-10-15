@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -10,12 +11,14 @@ import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
 
+import java.util.Comparator;
 import java.util.List;
 
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private static final int MAX_PAGE_SIZE = 100;
 
     // Constructor injection - dependency yalnız interface-dir.
     public UserServiceImpl(UserRepository userRepository) {
@@ -47,6 +50,30 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public List<UserResponse> getUsersByName(String name) {
+        return userRepository.findByName(name).stream()
+                .sorted(Comparator.comparing(User::getId))
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public PageResponse<UserResponse> getUsersByNamePaged(String name, int page, int size) {
+        if (page < 0) {
+            throw new ValidationException("page mənfi ola bilməz");
+        }
+        if (size < 1 || size > MAX_PAGE_SIZE) {
+            throw new ValidationException("size 1 ilə " + MAX_PAGE_SIZE + " arasında olmalıdır");
+        }
+
+        List<UserResponse> filtered = (name == null || name.isBlank())
+                ? getAllUsers()
+                : getUsersByName(name);
+
+        return PageResponse.of(filtered, page, size);
     }
 
     @Override
