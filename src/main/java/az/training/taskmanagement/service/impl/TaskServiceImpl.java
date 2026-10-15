@@ -6,6 +6,7 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
@@ -72,19 +73,13 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
         Task task = findTaskOrThrow(id);
-        if (request.title() != null) {
-            task.setTitle(request.title());
-        }
-        if (request.description() != null) {
-            task.setDescription(request.description());
-        }
-        if (request.status() != null) {
-            task.setStatus(request.status());
-        }
-        if (request.priority() != null) {
-            task.setPriority(request.priority());
-        }
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
         task.setUpdatedAt(LocalDateTime.now());
+
         return TaskMapper.toResponse(taskRepository.save(task));
     }
 
@@ -92,6 +87,13 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTask(Long id) {
         findTaskOrThrow(id);
         taskRepository.deleteById(id);
+    }
+
+    @Override
+    public List<TaskResponse> getByPriority(Priority priority) {
+        return taskRepository.findByPriority(priority).stream()
+                .map(TaskMapper::toResponse)
+                .toList();
     }
 
     private Task findTaskOrThrow(Long id) {

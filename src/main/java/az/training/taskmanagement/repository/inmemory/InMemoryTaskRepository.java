@@ -1,5 +1,6 @@
 package az.training.taskmanagement.repository.inmemory;
 
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.repository.TaskRepository;
 
@@ -49,5 +50,12 @@ public class InMemoryTaskRepository implements TaskRepository {
     @Override
     public void deleteById(Long id) {
         storage.remove(id);
+    }
+
+    @Override
+    public List<Task> findByPriority(Priority priority) {
+        return storage.values().stream()
+                .filter(task -> task.getPriority()!=null && task.getPriority().equals(priority))
+                .toList();
     }
 }

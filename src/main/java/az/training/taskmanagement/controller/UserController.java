@@ -1,6 +1,7 @@
 package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.service.TaskService;
@@ -11,14 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * User REST controller.
- *
- * Lesson 2-dəki sadə class-a HTTP annotasiyaları əlavə edildi:
- *  - @RestController: hər metodun qaytardığı obyekt JSON-a çevrilir.
- *  - @RequestMapping("/users"): bu controller-in baza yolu.
- *  - Dependency-lər constructor ilə Spring tərəfindən inject olunur.
- */
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -42,11 +35,6 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAllUsers();
-    }
-
     @GetMapping("/{id}/tasks")
     public List<TaskResponse> getUserTasks(@PathVariable Long id) {
         return taskService.getTasksByUser(id);
@@ -57,4 +45,13 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping
+    public PageResponse<UserResponse> getByNamePaged(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return userService.getUsersByNamePaged(name, page, size);
+    }
 }
+

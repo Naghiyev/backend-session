@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
@@ -55,8 +57,26 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    @Override
+    public List<UserResponse> getUserByName(String name) {
+        return userRepository.findByName(name).stream()
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public PageResponse<UserResponse> getUsersByNamePaged(String name, int page, int size) {
+        List<UserResponse> filtered = (name == null || name.isBlank())
+                ? getAllUsers()
+                : getUserByName(name);
+
+        return PageResponse.of(filtered, page, size);
+    }
+
     private User findUserOrThrow(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("User", id));
     }
+
 }
+

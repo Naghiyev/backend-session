@@ -1,5 +1,6 @@
 package az.training.taskmanagement.repository;
 
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 
 import java.util.List;
@@ -16,4 +17,9 @@ public interface TaskRepository {
     List<Task> findByUserId(Long userId);
 
     void deleteById(Long id);
+
+    List<Task> findByPriority(Priority priority);
+
+
+
 }
