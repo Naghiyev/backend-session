@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+
 /**
  * Lesson 5 — fundamental endpoints only.
  * Qalan endpoint-lər (getAll, delete, user-in taskları) Lesson 6-da əlavə olunur.
@@ -30,4 +33,12 @@ public class UserController {
     public UserResponse getById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
+    @GetMapping
+    public List<UserResponse> getAll(@RequestParam(required = false) String name){
+        if(name==null || name.isBlank()){
+            return userService.getAllUsers();
+        }
+        return userService.searchUsers(name);
+    }
+
 }
