@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.UserResponse;
 
 import java.util.List;
@@ -16,6 +17,10 @@ public interface UserService {
     UserResponse getUserById(Long id);
 
     List<UserResponse> getAllUsers();
+
+    List<UserResponse> getUsersByName(String name);
+
+    PageResponse<UserResponse> getUsersByNamePaged(String name, int page, int size);
 
     void deleteUser(Long id);
 }

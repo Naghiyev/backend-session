@@ -1,6 +1,7 @@
 package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.service.TaskService;
@@ -45,6 +46,13 @@ public class UserController {
     @GetMapping
     public List<UserResponse> getAll() {
         return userService.getAllUsers();
+    }
+
+    @GetMapping()
+    public PageResponse<UserResponse> getByNamePaged(@RequestParam(required = false) String name,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        return userService.getUsersByNamePaged(name, page, size);
     }
 
     @GetMapping("/{id}/tasks")
