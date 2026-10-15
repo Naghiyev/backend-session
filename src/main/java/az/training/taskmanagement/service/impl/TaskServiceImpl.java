@@ -1,11 +1,13 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
+import az.training.taskmanagement.dto.FullUpdateTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
@@ -52,9 +54,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getTasks(TaskStatus status) {
+    public List<TaskResponse> getTasks(TaskStatus status, Priority priority) {
         return taskRepository.findAll().stream()
                 .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> priority == null || t.getPriority() == priority)
                 .map(TaskMapper::toResponse)
                 .toList();
     }
@@ -84,6 +87,28 @@ public class TaskServiceImpl implements TaskService {
         if (request.priority() != null) {
             task.setPriority(request.priority());
         }
+        task.setUpdatedAt(LocalDateTime.now());
+        return TaskMapper.toResponse(taskRepository.save(task));
+    }
+
+    @Override
+    public TaskResponse fullUpdateTask(Long id, FullUpdateTaskRequest request) {
+        Task task = findTaskOrThrow(id);
+
+        if (request.title() == null || request.title().isBlank()) {
+            throw new ValidationException("title boş ola bilməz");
+        }
+        if (request.status() == null) {
+            throw new ValidationException("status boş ola bilməz");
+        }
+        if (request.priority() == null) {
+            throw new ValidationException("priority boş ola bilməz");
+        }
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
         task.setUpdatedAt(LocalDateTime.now());
         return TaskMapper.toResponse(taskRepository.save(task));
     }
