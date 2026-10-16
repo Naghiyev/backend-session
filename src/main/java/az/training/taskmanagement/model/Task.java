@@ -1,5 +1,9 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -9,31 +13,38 @@ import java.util.Objects;
  * Task bir User-ə aiddir (userId vasitəsilə).
  * createdAt / updatedAt audit sahələridir.
  */
+
+@Entity
+@Table(name = "tasks")
+
+@AllArgsConstructor
+@Builder
 public class Task {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
     private TaskStatus status;
+    @Enumerated(EnumType.STRING)
     private Priority priority;
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+
+
+    public Task(Object o, String title, String description, TaskStatus todo, Priority priority, Long aLong) {
+    }
 
     public Task() {
+
     }
 
-    public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.priority = priority;
-        this.userId = userId;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = this.createdAt;
-    }
 
     public Long getId() {
         return id;
