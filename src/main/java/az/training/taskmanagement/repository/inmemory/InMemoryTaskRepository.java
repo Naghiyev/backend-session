@@ -1,6 +1,7 @@
 package az.training.taskmanagement.repository.inmemory;
 
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
 
 import java.util.ArrayList;
@@ -40,6 +41,17 @@ public class InMemoryTaskRepository implements TaskRepository {
         List<Task> result = new ArrayList<>();
         for (Task task : storage.values()) {
             if (task.getUserId() != null && task.getUserId().equals(userId)) {
+                result.add(task);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Task> getTasksByStatus(TaskStatus status) {
+        List<Task> result = new ArrayList<>();
+        for (Task task : storage.values()) {
+            if (task.getStatus()==status ) {
                 result.add(task);
             }
         }

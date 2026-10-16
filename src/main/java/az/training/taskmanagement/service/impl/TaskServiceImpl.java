@@ -70,6 +70,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<TaskResponse> getTasksByStatus(TaskStatus status) {
+        List<Task> tasks = taskRepository.getTasksByStatus(status);
+        if(tasks.isEmpty()) {
+            throw ResourceNotFoundException.of("Task", status);
+        }
+        return tasks.stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
         Task task = findTaskOrThrow(id);
         if (request.title() != null) {
