@@ -10,6 +10,8 @@ import java.util.Objects;
  *  - encapsulation (private field + getter/setter)
  *  - equals/hashCode id əsasında
  */
+
+
 public class User {
 
     private Long id;
