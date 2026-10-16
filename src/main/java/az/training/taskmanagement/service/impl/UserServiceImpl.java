@@ -9,6 +9,8 @@ import az.training.taskmanagement.mapper.UserMapper;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
+import az.training.taskmanagement.dto.PaginationResponse;
+import java.util.Comparator;
 
 import java.util.List;
 
@@ -50,13 +52,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> searchUsers(String name) {
-        if (name == null || name.isBlank()) {
-            return getAllUsers();
+    public PaginationResponse<UserResponse> searchUsers(String name, int page, int size) {
+        if (page < 0) {
+            throw new ValidationException("page 0-dan kiçik ola bilməz");
         }
-        return userRepository.findUsersEqualsGivenName(name).stream()
+        if (size < 1 || size > 100) {
+            throw new ValidationException("size 1 ilə 100 arasında olmalıdır");
+        }
+
+        List<User> users = (name == null || name.isBlank())
+                ? userRepository.findAll()
+                : userRepository.findUsersEqualsGivenName(name);
+
+        List<UserResponse> content = users.stream()
+                .sorted(Comparator.comparing(User::getId))
+                .skip((long) page * size)
+                .limit(size)
                 .map(UserMapper::toResponse)
                 .toList();
+
+        long totalElements = users.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return new PaginationResponse<>(content, page, size, totalElements, totalPages);
     }
 
     @Override
