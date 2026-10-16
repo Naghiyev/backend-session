@@ -1,5 +1,7 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
 /**
@@ -10,8 +12,11 @@ import java.util.Objects;
  *  - encapsulation (private field + getter/setter)
  *  - equals/hashCode id əsasında
  */
+@Entity
+@Table(name = "User")
 public class User {
-
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;

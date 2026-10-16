@@ -1,5 +1,7 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -9,8 +11,11 @@ import java.util.Objects;
  * Task bir User-ə aiddir (userId vasitəsilə).
  * createdAt / updatedAt audit sahələridir.
  */
+@Entity
+@Table(name="Task")
 public class Task {
-
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
