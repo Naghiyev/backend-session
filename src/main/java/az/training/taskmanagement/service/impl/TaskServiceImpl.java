@@ -11,6 +11,8 @@ import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
+import az.training.taskmanagement.model.Priority;
+import az.training.taskmanagement.dto.ReplaceTaskRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,9 +54,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getTasks(TaskStatus status) {
+    public List<TaskResponse> getTasks(TaskStatus status, Priority priority) {
         return taskRepository.findAll().stream()
                 .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> priority == null || t.getPriority() == priority)
                 .map(TaskMapper::toResponse)
                 .toList();
     }
@@ -84,6 +87,28 @@ public class TaskServiceImpl implements TaskService {
         if (request.priority() != null) {
             task.setPriority(request.priority());
         }
+        task.setUpdatedAt(LocalDateTime.now());
+        return TaskMapper.toResponse(taskRepository.save(task));
+    }
+
+    @Override
+    public TaskResponse replaceTask(Long id, ReplaceTaskRequest request) {
+        Task task = findTaskOrThrow(id);
+
+        if (request.title() == null || request.title().isBlank()) {
+            throw new ValidationException("Title məcburidir");
+        }
+        if (request.status() == null) {
+            throw new ValidationException("Status məcburidir");
+        }
+        if (request.priority() == null) {
+            throw new ValidationException("Priority məcburidir");
+        }
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
         task.setUpdatedAt(LocalDateTime.now());
         return TaskMapper.toResponse(taskRepository.save(task));
     }

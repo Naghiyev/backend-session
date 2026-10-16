@@ -8,6 +8,7 @@ import az.training.taskmanagement.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import az.training.taskmanagement.dto.PaginationResponse;
 
 import java.util.List;
 
@@ -42,9 +43,16 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+//    @GetMapping
+//    public List<UserResponse> getAll() {
+//        return userService.getAllUsers();
+//    }
+
     @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAllUsers();
+    public PaginationResponse<UserResponse> getAll(@RequestParam(required = false) String name,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        return userService.searchUsers(name, page, size);
     }
 
     @GetMapping("/{id}/tasks")
