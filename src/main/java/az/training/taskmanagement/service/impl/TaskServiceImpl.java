@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
+import az.training.taskmanagement.dto.ReplaceTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -86,6 +87,20 @@ public class TaskServiceImpl implements TaskService {
         }
         task.setUpdatedAt(LocalDateTime.now());
         return TaskMapper.toResponse(taskRepository.save(task));
+    }
+
+    @Override
+    public TaskResponse replaceTask(Long id, ReplaceTaskRequest request) {
+        Task task = findTaskOrThrow(id);
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
+        task.setUserId(request.userId());
+
+        Task save = taskRepository.save(task);
+        return TaskMapper.toResponse(task);
     }
 
     @Override

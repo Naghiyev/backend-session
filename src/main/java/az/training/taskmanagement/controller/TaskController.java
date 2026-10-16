@@ -1,6 +1,7 @@
 package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
+import az.training.taskmanagement.dto.ReplaceTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.model.TaskStatus;
@@ -41,6 +42,11 @@ public class TaskController {
     @PatchMapping("/{id}")
     public TaskResponse update(@PathVariable Long id, @RequestBody UpdateTaskRequest request) {
         return taskService.updateTask(id, request);
+    }
+
+    @PutMapping("/{id}")
+    public TaskResponse updateTask(@PathVariable Long id, @RequestBody ReplaceTaskRequest request) {
+        return taskService.replaceTask(id, request);
     }
 
     @DeleteMapping("/{id}")

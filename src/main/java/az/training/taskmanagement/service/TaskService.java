@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
+import az.training.taskmanagement.dto.ReplaceTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.model.TaskStatus;
@@ -15,7 +16,9 @@ public interface TaskService {
 
     List<TaskResponse> getAllTasks();
 
-    /** status null olduqda bütün task-lar, əks halda yalnız həmin statusdakılar. */
+    /**
+     * status null olduqda bütün task-lar, əks halda yalnız həmin statusdakılar.
+     */
     List<TaskResponse> getTasks(TaskStatus status);
 
     List<TaskResponse> getTasksByUser(Long userId);
@@ -23,4 +26,6 @@ public interface TaskService {
     TaskResponse updateTask(Long id, UpdateTaskRequest request);
 
     void deleteTask(Long id);
+
+    TaskResponse replaceTask(Long id, ReplaceTaskRequest request);
 }

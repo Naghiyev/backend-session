@@ -5,7 +5,8 @@ import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
-
+import org.springframework.web.bind.annotation.Mapping;
+@org.springframework.stereotype.Component
 public final class TaskMapper {
 
     private TaskMapper() {
