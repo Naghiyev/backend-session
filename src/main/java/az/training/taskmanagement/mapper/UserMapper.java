@@ -13,7 +13,10 @@ public final class UserMapper {
     }
 
     public static User toEntity(CreateUserRequest request) {
-        return new User(null, request.name(), request.email());
+        User user = new User();
+        user.setName(request.name().trim());
+        user.setEmail(request.email().trim().toLowerCase());
+        return user;
     }
 
     public static UserResponse toResponse(User user) {
