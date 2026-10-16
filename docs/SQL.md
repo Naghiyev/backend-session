@@ -44,4 +44,19 @@ DELETE FROM tasks WHERE id = 1;
 2. Heç bir task-ı olmayan user-ləri tap (LEFT JOIN + IS NULL).
 3. Hər status üzrə task sayını çıxar (GROUP BY).
 
+--`HIGH` prioritetli və `TODO` statuslu bütün task-ları tap.
+SELECT * FROM tasks
+WHERE priority = 'HIGH' AND status = 'TODO';
+
+--Heç bir task-ı olmayan user-ləri tap (LEFT JOIN + IS NULL).
+SELECT u.id, u.name, u.email
+FROM users u
+LEFT JOIN tasks t ON u.id = t.user_id
+WHERE t.id IS NULL;
+
+--Hər status üzrə task sayını çıxar (GROUP BY)
+SELECT status, COUNT(id) AS task_count
+FROM tasks
+GROUP BY status;
+
 > Növbəti dərsdə (Lesson 8) bu SQL işini **JPA/Hibernate** avtomatik edəcək.
