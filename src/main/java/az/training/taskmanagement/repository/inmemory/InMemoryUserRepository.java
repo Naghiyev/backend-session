@@ -4,6 +4,7 @@ import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +33,9 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        return new ArrayList<>(storage.values());
+        return storage.values().stream()
+                .sorted(Comparator.comparing(User::getId))
+                .toList();
     }
 
     @Override

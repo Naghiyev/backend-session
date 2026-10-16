@@ -2,6 +2,7 @@ package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateTaskRequest;
 import az.training.taskmanagement.dto.FullUpdateTaskRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.model.Priority;
@@ -39,9 +40,11 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getAll(@RequestParam(required = false) TaskStatus status,
-                                     @RequestParam(required = false) Priority priority) {
-        return taskService.getTasks(status, priority);
+    public PageResponse<TaskResponse> getAll(@RequestParam(required = false) TaskStatus status,
+                                             @RequestParam(required = false) Priority priority,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        return taskService.getTasks(status, priority, page, size);
     }
 
     @GetMapping("/{id}")

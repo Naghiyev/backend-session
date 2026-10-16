@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -9,6 +10,7 @@ import az.training.taskmanagement.mapper.UserMapper;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
+import az.training.taskmanagement.util.PageUtils;
 
 import java.util.List;
 
@@ -43,10 +45,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream()
+    public PageResponse<UserResponse> getAllUsers(int page, int size) {
+        List<UserResponse> all = userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
+        return PageUtils.paginate(all, page, size);
     }
 
     @Override

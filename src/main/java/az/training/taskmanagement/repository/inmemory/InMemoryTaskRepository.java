@@ -4,6 +4,7 @@ import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.repository.TaskRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +33,9 @@ public class InMemoryTaskRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll() {
-        return new ArrayList<>(storage.values());
+        return storage.values().stream()
+                .sorted(Comparator.comparing(Task::getId))
+                .toList();
     }
 
     @Override
