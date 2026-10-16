@@ -1,19 +1,15 @@
 package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.Task;
+import az.training.taskmanagement.model.TaskStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface TaskRepository {
+public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    Task save(Task task);
+    // user.id üzrə axtarış (nested property → user_ id)
+    List<Task> findByUser_Id(Long userId);
 
-    Optional<Task> findById(Long id);
-
-    List<Task> findAll();
-
-    List<Task> findByUserId(Long userId);
-
-    void deleteById(Long id);
+    List<Task> findByStatus(TaskStatus status);
 }

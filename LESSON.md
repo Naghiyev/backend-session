@@ -1,9 +1,9 @@
-# Dərs 6 — Full REST API with Spring Boot
+# Dərs 12 — Production Backend
 ## Məqsəd
-API kontraktını tam implementasiya etmək.
+Real production sistemində istifadə olunan əsas anlayışları başa düşmək və layihəni yekunlaşdırmaq.
 ## Mövzular
-- Bütün CRUD endpoint-ləri; status filter (`@RequestParam`).
-- `ResponseEntity` ilə status idarəsi (201 Created, 204 No Content).
-- PATCH ilə qismən yeniləmə.
+- Authentication vs Authorization; JWT & Bearer; 401 vs 403.
+- Caching (hit/miss); Docker; CI/CD.
+- Monolith vs microservices (giriş).
 ## Learning Outcome
-İştirakçı tam REST API-ni Spring Boot ilə implementasiya edə bilir.
+İştirakçı production backend haqqında bütöv mental model əldə edir.

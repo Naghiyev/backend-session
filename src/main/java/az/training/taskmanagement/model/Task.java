@@ -1,38 +1,70 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Task domain model.
+ * Task JPA entity.
  *
- * Task bir User-ə aiddir (userId vasitəsilə).
- * createdAt / updatedAt audit sahələridir.
+ *  - @ManyToOne: çoxlu Task bir User-ə aiddir (əlaqənin "çox" tərəfi).
+ *  - @JoinColumn: foreign key sütunu (user_id).
+ *  - @Enumerated(STRING): enum bazada mətn kimi saxlanılır.
+ *  - @PrePersist / @PreUpdate: audit sahələrini avtomatik doldurur.
  */
+@Entity
+@Table(name = "tasks")
 public class Task {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(length = 1000)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TaskStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Priority priority;
-    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     public Task() {
     }
 
-    public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
-        this.id = id;
+    public Task(String title, String description, TaskStatus status, Priority priority, User user) {
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
-        this.userId = userId;
+        this.user = user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -75,45 +107,37 @@ public class Task {
         this.priority = priority;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
-        return Objects.equals(id, task.id);
+        return id != null && Objects.equals(id, task.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return getClass().hashCode();
     }
 
     @Override
     public String toString() {
         return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + ", userId=" + userId + "}";
+                + ", priority=" + priority + "}";
     }
 }

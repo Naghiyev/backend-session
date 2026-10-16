@@ -1,5 +1,5 @@
-# Ev tapşırığı 6
-1. `Category` üçün tam REST controller yaz.
-2. `PUT /tasks/{id}` (tam əvəzləmə) əlavə et və PATCH-dən fərqini izah et.
-3. `GET /tasks` üçün `priority` filtri əlavə et.
+# Ev tapşırığı 12 (Yekun layihə)
+1. `Category` funksionallığını uçtan-uca tamamla (bütün qatlar + test).
+2. İstifadəçiləri database-də saxla, parolu BCrypt ilə hash-lə.
+3. `docker compose up --build` ilə tam stack-i qaldır və README-dəki axını icra et.
 

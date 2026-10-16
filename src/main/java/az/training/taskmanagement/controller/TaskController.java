@@ -5,6 +5,7 @@ import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> create(@RequestBody CreateTaskRequest request) {
+    public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request) {
         TaskResponse created = taskService.createTask(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -39,7 +40,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public TaskResponse update(@PathVariable Long id, @RequestBody UpdateTaskRequest request) {
+    public TaskResponse update(@PathVariable Long id, @Valid @RequestBody UpdateTaskRequest request) {
         return taskService.updateTask(id, request);
     }
 

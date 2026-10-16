@@ -1,10 +1,6 @@
 package az.training.taskmanagement.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-/** Sadə business validation səhvi -> HTTP 400. */
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+/** Business validation səhvi. HTTP 400 → GlobalExceptionHandler. */
 public class ValidationException extends RuntimeException {
     public ValidationException(String message) {
         super(message);

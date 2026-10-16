@@ -2,6 +2,7 @@ package az.training.taskmanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * Spring Boot application-ın giriş nöqtəsi.
@@ -14,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Lesson 2-də əl ilə etdiyimiz "wiring"-i indi Spring avtomatik edir (DI).
  */
 @SpringBootApplication
+@EnableCaching
 public class TaskManagementApplication {
 
     public static void main(String[] args) {
