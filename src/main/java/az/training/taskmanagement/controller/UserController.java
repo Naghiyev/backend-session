@@ -1,6 +1,7 @@
 package az.training.taskmanagement.controller;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.service.TaskService;
@@ -43,9 +44,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAllUsers();
+    public PageResponse<UserResponse> getAll(@RequestParam(defaultValue = "0") int page ,
+                                             @RequestParam( defaultValue = "10") int size)
+    {
+        return userService.getUsersPage(page, size);
     }
+
     @GetMapping("/names")
     public List<String> getAllName(@RequestParam(required = false) String name) {
         return userService.getAllUsersName(name);
@@ -55,6 +59,7 @@ public class UserController {
     public List<TaskResponse> getUserTasks(@PathVariable Long id) {
         return taskService.getTasksByUser(id);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
