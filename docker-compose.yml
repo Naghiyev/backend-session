@@ -1,4 +1,4 @@
-# Lokal PostgreSQL:  docker compose up -d postgres
+# Bütün stack-i qaldırmaq üçün:  docker compose up --build
 services:
   postgres:
     image: postgres:16
@@ -11,6 +11,27 @@ services:
       - "5432:5432"
     volumes:
       - taskdb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskuser -d taskdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build: .
+    container_name: task-management-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskdb
+      SPRING_DATASOURCE_USERNAME: taskuser
+      SPRING_DATASOURCE_PASSWORD: taskpass
+      JWT_SECRET: change-this-secret-key-min-32-bytes-long-1234567890
+      DEMO_USER: admin
+      DEMO_PASS: admin123
+    ports:
+      - "8080:8080"
 
 volumes:
   taskdb_data:

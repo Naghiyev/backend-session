@@ -1,9 +1,9 @@
-# Dərs 7 — Relational Databases & SQL
+# Dərs 12 — Production Backend
 ## Məqsəd
-Relational database və SQL əsaslarını öyrənmək (persistence-dən əvvəl).
+Real production sistemində istifadə olunan əsas anlayışları başa düşmək və layihəni yekunlaşdırmaq.
 ## Mövzular
-- Table, row, column; Primary Key & Foreign Key.
-- Əlaqələr (1–1, 1–M, M–M); constraint, index.
-- SQL: SELECT / INSERT / UPDATE / DELETE, WHERE, JOIN.
+- Authentication vs Authorization; JWT & Bearer; 401 vs 403.
+- Caching (hit/miss); Docker; CI/CD.
+- Monolith vs microservices (giriş).
 ## Learning Outcome
-İştirakçı relational modeli və əsas SQL sorğularını başa düşür.
+İştirakçı production backend haqqında bütöv mental model əldə edir.

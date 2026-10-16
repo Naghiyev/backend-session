@@ -1,26 +1,15 @@
 package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.User;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Repository abstraction.
+ * Spring Data JPA repository.
  *
- * Lesson 2: service artıq konkret saxlamadan asılı deyil, yalnız bu
- * interface-dən asılıdır (Dependency Inversion Principle - SOLID-in "D"-si).
- * Lesson 5-də bu interface Spring Data JPA ilə əvəz olunacaq.
+ * JpaRepository bizə hazır CRUD verir (save, findById, findAll, deleteById...).
+ * "existsByEmail" isə **derived query**-dir: Spring metod adından SQL yaradır.
  */
-public interface UserRepository {
-
-    User save(User user);
-
-    Optional<User> findById(Long id);
-
-    List<User> findAll();
+public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
-
-    void deleteById(Long id);
 }

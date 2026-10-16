@@ -1,26 +1,40 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * User domain model.
+ * User JPA entity.
  *
- * Lesson 1 fokusu:
- *  - class, field, constructor
- *  - encapsulation (private field + getter/setter)
- *  - equals/hashCode id əsasında
+ * Lesson 5: model artıq database cədvəlinə map olunur.
+ *  - @Entity + @Table cədvəli təyin edir
+ *  - @Id + @GeneratedValue primary key-i avtomatik yaradır
+ *  - @OneToMany: bir User-in çoxlu Task-ı var (əlaqənin "bir" tərəfi)
  */
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 
     public User() {
     }
 
-    public User(Long id, String name, String email) {
-        this.id = id;
+    public User(String name, String email) {
         this.name = name;
         this.email = email;
     }
@@ -49,16 +63,24 @@ public class User {
         this.email = email;
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id);
+        return id != null && Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return getClass().hashCode();
     }
 
     @Override
