@@ -1,6 +1,7 @@
 package az.training.taskmanagement.repository;
 
 import az.training.taskmanagement.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,15 +13,15 @@ import java.util.Optional;
  * interface-dən asılıdır (Dependency Inversion Principle - SOLID-in "D"-si).
  * Lesson 5-də bu interface Spring Data JPA ilə əvəz olunacaq.
  */
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User , Long> {
 
-    User save(User user);
+//    User save(User user);
+//
+//    Optional<User> findById(Long id);
+//
+//    List<User> findAll();
 
-    Optional<User> findById(Long id);
+//    boolean existsByEmail(String email);
 
-    List<User> findAll();
-
-    boolean existsByEmail(String email);
-
-    void deleteById(Long id);
+//    void deleteById(Long id);
 }
