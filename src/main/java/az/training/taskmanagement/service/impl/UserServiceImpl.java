@@ -1,6 +1,7 @@
 package az.training.taskmanagement.service.impl;
 
 import az.training.taskmanagement.dto.CreateUserRequest;
+import az.training.taskmanagement.dto.PageResponse;
 import az.training.taskmanagement.dto.UserResponse;
 import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
 
+import java.util.Comparator;
 import java.util.List;
 
 @org.springframework.stereotype.Service
@@ -47,6 +49,31 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
+    }
+    @Override
+    public List<String> getAllUsersName(String name) {
+        return userRepository.findAll().stream()
+                .map(User::getName).filter(userName -> name == null || name.isBlank()
+                        || userName.toLowerCase().contains(name.toLowerCase()))
+                .toList();
+    }
+
+    @Override
+    public PageResponse<UserResponse> getUsersPage(int page, int size) {
+        if(page<0 ){
+            throw new ValidationException("page can not be minus");
+        }
+        if(size<1 || size > 100){
+            throw new ValidationException(" size 1 and 100 between");
+        }
+        List<User> all= userRepository.findAll();
+        long allElements= all.size();
+        int allPages=(int) Math.ceil((double) allElements/ size);
+        List<UserResponse> content =all.stream().sorted(Comparator.comparing(User::getId))
+                .skip((long) page*size)
+                .limit(size)
+                .map(UserMapper::toResponse).toList();
+        return new PageResponse<>(content, page ,size, allElements, allPages);
     }
 
     @Override
