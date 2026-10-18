@@ -6,6 +6,7 @@ import az.training.taskmanagement.exception.DuplicateResourceException;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.UserMapper;
+import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
@@ -55,8 +56,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        findUserOrThrow(id);
-        userRepository.deleteById(id);
+//        findUserOrThrow(id);
+//        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow();
+
+        for (Task task : user.getTasks()) {
+            task.setUser(null);
+        }
+        user.getTasks().clear();
+
+        userRepository.delete(user);
     }
 
     private User findUserOrThrow(Long id) {

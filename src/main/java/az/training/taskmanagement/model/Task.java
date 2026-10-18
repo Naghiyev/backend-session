@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * Task JPA entity.
- *
+
  *  - @ManyToOne: çoxlu Task bir User-ə aiddir (əlaqənin "çox" tərəfi).
  *  - @JoinColumn: foreign key sütunu (user_id).
  *  - @Enumerated(STRING): enum bazada mətn kimi saxlanılır.
@@ -36,8 +36,12 @@ public class Task {
     private Priority priority;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = true)
+    private Category category;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,12 +52,13 @@ public class Task {
     public Task() {
     }
 
-    public Task(String title, String description, TaskStatus status, Priority priority, User user) {
+    public Task(String title, String description, TaskStatus status, Priority priority, User user, Category category) {
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
         this.user = user;
+        this.category = category;
     }
 
     @PrePersist
@@ -113,6 +118,14 @@ public class Task {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public LocalDateTime getCreatedAt() {

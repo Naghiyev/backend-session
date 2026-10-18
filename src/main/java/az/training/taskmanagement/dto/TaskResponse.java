@@ -15,6 +15,7 @@ public record TaskResponse(
         TaskStatus status,
         Priority priority,
         Long userId,
+        Long categoryId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 }

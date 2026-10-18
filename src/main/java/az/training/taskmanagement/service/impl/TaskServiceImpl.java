@@ -6,9 +6,8 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
-import az.training.taskmanagement.model.Task;
-import az.training.taskmanagement.model.TaskStatus;
-import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.model.*;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
@@ -23,10 +22,12 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -36,7 +37,9 @@ public class TaskServiceImpl implements TaskService {
         }
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
-        Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> ResourceNotFoundException.of("Category", request.categoryId()));
+        Task saved = taskRepository.save(TaskMapper.toEntity(request, user, category));
         return TaskMapper.toResponse(saved);
     }
 
@@ -45,6 +48,24 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponse getTaskById(Long id) {
         return TaskMapper.toResponse(findTaskOrThrow(id));
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getByUser_IdAndStatus(Long userId, TaskStatus status){
+        return taskRepository.findByUser_IdAndStatus(userId,status)
+                .stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getTasksByStatusAndPriority(TaskStatus status, Priority priority){
+        return taskRepository.findTasksByStatusAndPriority(status, priority)
+                .stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
 
     @Override
     @Transactional(readOnly = true)
