@@ -3,6 +3,7 @@ package az.training.taskmanagement.service;
 import az.training.taskmanagement.dto.CreateTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
 
 import java.util.List;
@@ -19,6 +20,10 @@ public interface TaskService {
     List<TaskResponse> getTasks(TaskStatus status);
 
     List<TaskResponse> getTasksByUser(Long userId);
+
+    List<TaskResponse> getUserTasksByPriority(Long userId, Priority priority);
+
+    List<TaskResponse> getTasksByUserAndStatus(Long userId, TaskStatus status);
 
     TaskResponse updateTask(Long id, UpdateTaskRequest request);
 

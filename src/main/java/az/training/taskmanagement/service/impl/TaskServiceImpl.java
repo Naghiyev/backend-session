@@ -6,6 +6,7 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
@@ -70,6 +71,28 @@ public class TaskServiceImpl implements TaskService {
             throw ResourceNotFoundException.of("User", userId);
         }
         return taskRepository.findByUser_Id(userId).stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getTasksByUserAndStatus(Long userId, TaskStatus taskStatus){
+        if(!userRepository.existsById(userId)) {
+            throw ResourceNotFoundException.of("User", userId);
+        }
+        return taskRepository.findByUser_IdAndStatus(userId, taskStatus).stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getUserTasksByPriority(Long userId, Priority priority) {
+        if (!userRepository.existsById(userId)) {
+            throw ResourceNotFoundException.of("User", userId);
+        }
+        return taskRepository.findUserTasksByPriority(userId, priority).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
     }
