@@ -62,7 +62,9 @@ public class TaskService {
     }
 
     public List<Task> getTasksByStatus(TaskStatus status) {
-        return taskRepository.findByStatus(status);
+    return taskRepository.findAll().stream()
+            .filter(task -> task.getStatus() == status)
+            .toList();
     }
 
     public Task updateStatus(Long id, TaskStatus status) {

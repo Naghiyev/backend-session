@@ -7,6 +7,7 @@ import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.CategoryRepository;
+import az.training.taskmanagement.repository.InMemoryCategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.CategoryService;
@@ -21,7 +22,7 @@ public class Main {
     public static void main(String[] args) {
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
-        CategoryRepository categoryRepository = new CategoryRepository();
+        CategoryRepository categoryRepository = new InMemoryCategoryRepository();
         UserService userService = new UserService(userRepository);
         CategoryService categoryService = new CategoryService(categoryRepository);
         TaskService taskService = new TaskService(taskRepository, userRepository, categoryRepository);
