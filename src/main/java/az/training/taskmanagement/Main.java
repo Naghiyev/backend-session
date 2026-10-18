@@ -1,71 +1,88 @@
 package az.training.taskmanagement;
 
+import az.training.taskmanagement.exception.CategoryNotFoundException;
+import az.training.taskmanagement.model.Category;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.CategoryRepository;
+import az.training.taskmanagement.repository.InMemoryCategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.CategoryService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 
 /**
- * Lesson 1 demo.
- *
- * Bu class hələ REST API deyil - sadəcə backend model-in,
- * repository və service qatlarının necə işlədiyini console-da göstərir.
- *
- * İşə salmaq:  mvn -q compile exec:java
+ * Lesson 1 demo (console).
  */
 public class Main {
 
     public static void main(String[] args) {
-        // Qatları əl ilə "quraşdırırıq" (manual wiring).
-        // Lesson 4-də bunu Spring avtomatik edəcək (Dependency Injection).
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
+        CategoryRepository categoryRepository = new InMemoryCategoryRepository();
         UserService userService = new UserService(userRepository);
-        TaskService taskService = new TaskService(taskRepository, userRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        TaskService taskService = new TaskService(taskRepository, userRepository, categoryRepository);
 
         System.out.println("=== Task Management API - Lesson 1 (in-memory) ===\n");
 
-        // CREATE user
+        // CREATE users
         User darya = userService.createUser("Darya", "darya@example.com");
         User ali = userService.createUser("Ali", "ali@example.com");
-        System.out.println("Yaradılan user-lər:");
+        System.out.println("Users:");
         userService.getAllUsers().forEach(u -> System.out.println("  " + u));
 
+        // CREATE categories
+        Category c1 = categoryService.createCategory("Work", "Finish by 6pm");
+        Category c2 = categoryService.createCategory("Personal", "Weekends");
+        System.out.println("\nCategories:");
+        categoryService.getAllCategories().forEach(c -> System.out.println("  " + c));
+
         // CREATE tasks
-        Task t1 = taskService.createTask("Backend syllabus hazırla",
-                "8 dərslik plan", Priority.HIGH, darya.getId());
-        Task t2 = taskService.createTask("Repository nümunəsi yaz",
-                "In-memory CRUD", Priority.MEDIUM, darya.getId());
-        Task t3 = taskService.createTask("Java essentials təkrar et",
-                null, Priority.LOW, ali.getId());
-        System.out.println("\nYaradılan task-lar:");
+        Task t1 = taskService.createTask("Backend syllabus", "8 lesson plan",
+                Priority.HIGH, darya.getId(), c1.id());
+        Task t2 = taskService.createTask("Repository example", "In-memory CRUD",
+                Priority.MEDIUM, darya.getId(), c2.id());
+        Task t3 = taskService.createTask("Java essentials review", null,
+                Priority.LOW, ali.getId(), c1.id());
+        System.out.println("\nTasks:");
         taskService.getAllTasks().forEach(t -> System.out.println("  " + t));
 
         // UPDATE status
         taskService.updateStatus(t1.getId(), TaskStatus.IN_PROGRESS);
-        System.out.println("\nStatus dəyişdi -> " + taskService.getTaskById(t1.getId()));
+        System.out.println("\nStatus changed -> " + taskService.getTaskById(t1.getId()));
+
+        // FIND by status
+        System.out.println("\nTasks with status TODO:");
+        taskService.getTasksByStatus(TaskStatus.TODO).forEach(t -> System.out.println("  " + t));
+
+        System.out.println("\nTasks with status IN_PROGRESS:");
+        taskService.getTasksByStatus(TaskStatus.IN_PROGRESS).forEach(t -> System.out.println("  " + t));
 
         // FIND by user
-        System.out.println("\nDarya-nın task-ları:");
+        System.out.println("\nDarya's tasks:");
         taskService.getTasksByUser(darya.getId()).forEach(t -> System.out.println("  " + t));
 
         // DELETE
         taskService.deleteTask(t3.getId());
-        System.out.println("\nt3 silindikdən sonra ümumi task sayı: "
-                + taskService.getAllTasks().size());
+        System.out.println("\nTask count after deleting t3: " + taskService.getAllTasks().size());
 
-        // Xəta ssenarisi (validation)
-        System.out.println("\nXəta ssenarisi:");
+        // Error scenarios
+        System.out.println("\nError scenarios:");
         try {
-            userService.createUser("Dublikat", "darya@example.com");
+            userService.createUser("Duplicate", "darya@example.com");
         } catch (IllegalArgumentException e) {
-            System.out.println("  Gözlənilən xəta: " + e.getMessage());
+            System.out.println("  Expected error: " + e.getMessage());
+        }
+        try {
+            taskService.createTask("Test", null, Priority.LOW, darya.getId(), 999L);
+        } catch (CategoryNotFoundException e) {
+            System.out.println("  Expected error: " + e.getMessage());
         }
 
-        System.out.println("\n=== Demo bitdi ===");
+        System.out.println("\n=== Demo finished ===");
     }
 }

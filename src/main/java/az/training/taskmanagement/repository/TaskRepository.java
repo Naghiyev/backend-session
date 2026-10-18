@@ -34,15 +34,12 @@ public class TaskRepository {
     }
 
     public List<Task> findByUserId(Long userId) {
-        List<Task> result = new ArrayList<>();
-        for (Task task : storage.values()) {
-            if (task.getUserId() != null && task.getUserId().equals(userId)) {
-                result.add(task);
-            }
-        }
-        return result;
+        return storage.values().stream()
+                .filter(task -> task.getUserId() != null && task.getUserId().equals(userId))
+                .toList();
     }
 
+    
     public void deleteById(Long id) {
         storage.remove(id);
     }
