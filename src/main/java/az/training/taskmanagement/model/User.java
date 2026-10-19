@@ -1,20 +1,31 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
-/**
- * User domain model.
- *
- * Lesson 1 fokusu:
- *  - class, field, constructor
- *  - encapsulation (private field + getter/setter)
- *  - equals/hashCode id əsasında
- */
+
+
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true, length = 150)
     private String email;
+
 
     public User() {
     }
@@ -24,6 +35,8 @@ public class User {
         this.name = name;
         this.email = email;
     }
+
+
 
     public Long getId() {
         return id;
@@ -53,12 +66,12 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id);
+        return id != null && Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return getClass().hashCode();
     }
 
     @Override

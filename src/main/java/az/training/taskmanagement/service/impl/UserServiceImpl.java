@@ -17,7 +17,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    // Constructor injection - dependency yalnız interface-dir.
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

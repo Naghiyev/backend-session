@@ -8,11 +8,11 @@ import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
+import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @org.springframework.stereotype.Service
@@ -31,11 +31,14 @@ public class TaskServiceImpl implements TaskService {
         if (request.title() == null || request.title().isBlank()) {
             throw new ValidationException("title boş ola bilməz");
         }
-        // Task yaratmazdan əvvəl user-in mövcudluğunu yoxla.
-        if (userRepository.findById(request.userId()).isEmpty()) {
-            throw ResourceNotFoundException.of("User", request.userId());
+        if (request.userId() == null) {
+            throw new ValidationException("userId boş ola bilməz");
         }
-        Task saved = taskRepository.save(TaskMapper.toEntity(request));
+
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
+
+        Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
         return TaskMapper.toResponse(saved);
     }
 
@@ -53,18 +56,20 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResponse> getTasks(TaskStatus status) {
-        return taskRepository.findAll().stream()
-                .filter(t -> status == null || t.getStatus() == status)
+        List<Task> tasks = (status == null)
+                ? taskRepository.findAll()
+                : taskRepository.findByStatus(status);
+        return tasks.stream()
                 .map(TaskMapper::toResponse)
                 .toList();
     }
 
     @Override
     public List<TaskResponse> getTasksByUser(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
+        if (!userRepository.existsById(userId)) {
             throw ResourceNotFoundException.of("User", userId);
         }
-        return taskRepository.findByUserId(userId).stream()
+        return taskRepository.findByUser_Id(userId).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
     }
@@ -84,7 +89,6 @@ public class TaskServiceImpl implements TaskService {
         if (request.priority() != null) {
             task.setPriority(request.priority());
         }
-        task.setUpdatedAt(LocalDateTime.now());
         return TaskMapper.toResponse(taskRepository.save(task));
     }
 
