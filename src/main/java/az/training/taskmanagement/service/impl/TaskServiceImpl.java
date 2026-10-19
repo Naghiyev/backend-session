@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponse> getTasks(TaskStatus status) {
         return taskRepository.findAll().stream()
-                .filter(t -> status == null || t.getStatus() == status)
+            .filter(t -> status == null || t.getStatus() == status)
                 .map(TaskMapper::toResponse)
                 .toList();
     }

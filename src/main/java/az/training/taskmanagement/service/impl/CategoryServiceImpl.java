@@ -6,7 +6,7 @@ import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.CategoryMapper;
 import az.training.taskmanagement.model.Category;
-import az.training.taskmanagement.repository.inmemory.InMemoryCategoryRepository;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.service.CategoryService;
 
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private final InMemoryCategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    public CategoryServiceImpl(InMemoryCategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 

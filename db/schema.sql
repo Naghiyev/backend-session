@@ -14,9 +14,15 @@ CREATE TABLE IF NOT EXISTS tasks (
     status      VARCHAR(20)  NOT NULL,           -- TODO | IN_PROGRESS | DONE
     priority    VARCHAR(20)  NOT NULL,           -- LOW | MEDIUM | HIGH
     user_id     BIGINT NOT NULL REFERENCES users(id),  -- FOREIGN KEY
+    category_id BIGINT NOT NULL REFERENCES category(id)  --FOREIGN KEY
     created_at  TIMESTAMP NOT NULL DEFAULT now(),
     updated_at  TIMESTAMP NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS categories(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+)
 
 -- Index: user üzrə task axtarışını sürətləndirir
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
