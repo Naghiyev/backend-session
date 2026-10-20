@@ -1,13 +1,21 @@
 package az.training.taskmanagement;
 
+import az.training.taskmanagement.exceptions.DuplicateResourceException;
+import az.training.taskmanagement.exceptions.InvalidInputException;
+import az.training.taskmanagement.exceptions.ResourceNotFoundException;
+import az.training.taskmanagement.model.Category;
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
+import az.training.taskmanagement.service.CategoryService;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
+
+import static az.training.taskmanagement.model.TaskStatus.IN_PROGRESS;
 
 /**
  * Lesson 1 demo.
@@ -24,8 +32,10 @@ public class Main {
         // Lesson 4-də bunu Spring avtomatik edəcək (Dependency Injection).
         UserRepository userRepository = new UserRepository();
         TaskRepository taskRepository = new TaskRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
         UserService userService = new UserService(userRepository);
-        TaskService taskService = new TaskService(taskRepository, userRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        TaskService taskService = new TaskService(taskRepository, userRepository, categoryRepository);
 
         System.out.println("=== Task Management API - Lesson 1 (in-memory) ===\n");
 
@@ -35,19 +45,29 @@ public class Main {
         System.out.println("Yaradılan user-lər:");
         userService.getAllUsers().forEach(u -> System.out.println("  " + u));
 
-        // CREATE tasks
+        // CREATE categories
+        Category work = categoryService.createCategory("Work");
+        Category study = categoryService.createCategory("Study");
+        System.out.println("\nYaradılan category-lər:");
+        categoryService.getAllCategories().forEach(c -> System.out.println("  " + c));
+
+        // CREATE tasks (categoryId ilə)
         Task t1 = taskService.createTask("Backend syllabus hazırla",
-                "8 dərslik plan", Priority.HIGH, darya.getId());
+                "8 dərslik plan", Priority.HIGH, darya.getId(), work.getId());
         Task t2 = taskService.createTask("Repository nümunəsi yaz",
-                "In-memory CRUD", Priority.MEDIUM, darya.getId());
+                "In-memory CRUD", Priority.MEDIUM, darya.getId(), work.getId());
         Task t3 = taskService.createTask("Java essentials təkrar et",
-                null, Priority.LOW, ali.getId());
+                null, Priority.LOW, ali.getId(), study.getId());
         System.out.println("\nYaradılan task-lar:");
         taskService.getAllTasks().forEach(t -> System.out.println("  " + t));
 
         // UPDATE status
-        taskService.updateStatus(t1.getId(), TaskStatus.IN_PROGRESS);
+        taskService.updateStatus(t1.getId(), IN_PROGRESS);
         System.out.println("\nStatus dəyişdi -> " + taskService.getTaskById(t1.getId()));
+
+        // FIND by status
+        System.out.println("\nTODO statusundakı task-lar:");
+        taskService.getTasksByStatus(TaskStatus.TODO).forEach(t -> System.out.println("  " + t));
 
         // FIND by user
         System.out.println("\nDarya-nın task-ları:");
@@ -62,10 +82,19 @@ public class Main {
         System.out.println("\nXəta ssenarisi:");
         try {
             userService.createUser("Dublikat", "darya@example.com");
-        } catch (IllegalArgumentException e) {
-            System.out.println("  Gözlənilən xəta: " + e.getMessage());
+        } catch (DuplicateResourceException e) {
+            System.out.println("  Gözlənilən xəta (Duplicate): " + e.getMessage());
         }
-
+        try {
+            taskService.createTask("Test", null, Priority.LOW, darya.getId(), 99L);
+        } catch (ResourceNotFoundException e) {
+            System.out.println("  Gözlənilən xəta (NotFound): " + e.getMessage());
+        }
+        try {
+            taskService.createTask("  ", null, Priority.LOW, darya.getId(), 99L);
+        } catch (InvalidInputException e) {
+            System.out.println("  Gözlənilən xəta (InvalidInput): " + e.getMessage());
+        }
         System.out.println("\n=== Demo bitdi ===");
     }
 }

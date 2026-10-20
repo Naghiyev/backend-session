@@ -1,5 +1,8 @@
 package az.training.taskmanagement.service;
 
+import az.training.taskmanagement.exceptions.DuplicateResourceException;
+import az.training.taskmanagement.exceptions.InvalidInputException;
+import az.training.taskmanagement.exceptions.ResourceNotFoundException;
 import az.training.taskmanagement.model.User;
 import az.training.taskmanagement.repository.UserRepository;
 
@@ -21,13 +24,13 @@ public class UserService {
 
     public User createUser(String name, String email) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name boş ola bilməz");
+            throw new InvalidInputException("name boş ola bilməz");
         }
         if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("email boş ola bilməz");
+            throw new InvalidInputException("email boş ola bilməz");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Bu email artıq mövcuddur: " + email);
+            throw new DuplicateResourceException("bu email artiq movcuddur "+email);
         }
         User user = new User(null, name, email);
         return userRepository.save(user);
@@ -35,7 +38,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User tapılmadı: id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User" ,id));
     }
 
     public List<User> getAllUsers() {
