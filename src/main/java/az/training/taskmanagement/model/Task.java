@@ -1,5 +1,9 @@
 package az.training.taskmanagement.model;
 
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Cascade;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -9,111 +13,82 @@ import java.util.Objects;
  * Task bir User-ə aiddir (userId vasitəsilə).
  * createdAt / updatedAt audit sahələridir.
  */
+@Entity
+@Table(name = "tasks")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Task {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
+
+    @Column(nullable = false, length = 200)
     private String title;
+
+    @Column(length = 1000)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TaskStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Priority priority;
-    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @Column(nullable = false, updatable = false)
+    @Setter(AccessLevel.NONE)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    @Setter(AccessLevel.NONE)
     private LocalDateTime updatedAt;
 
-    public Task() {
-    }
-
-    public Task(Long id, String title, String description,
-                TaskStatus status, Priority priority, Long userId) {
-        this.id = id;
+    public Task(String title, String description, TaskStatus status, Priority priority, User user) {
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
-        this.userId = userId;
+        this.user = user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
-        return Objects.equals(id, task.id);
+        return id != null && Objects.equals(id, task.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return getClass().hashCode();
     }
 
     @Override
     public String toString() {
         return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + ", userId=" + userId + "}";
+                + ", priority=" + priority + "}";
     }
 }

@@ -7,8 +7,10 @@ import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.UserMapper;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,12 +18,20 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
-    // Constructor injection - dependency yalnız interface-dir.
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, TaskRepository taskRepository) {
         this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
     }
 
+    @Override
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = findUserOrThrow(id);
+        taskRepository.unassignUser(id);
+        userRepository.delete(user);
+    }
     @Override
     public UserResponse createUser(CreateUserRequest request) {
         if (request.name() == null || request.name().isBlank()) {
@@ -47,12 +57,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        findUserOrThrow(id);
-        userRepository.deleteById(id);
     }
 
     private User findUserOrThrow(Long id) {

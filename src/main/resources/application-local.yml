@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: task-management-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskdb
+    username: taskuser
+    password: taskpass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+logging:
+  level:
+    az.training.taskmanagement: INFO
