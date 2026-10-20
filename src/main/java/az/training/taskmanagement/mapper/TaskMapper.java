@@ -19,6 +19,7 @@ public final class TaskMapper {
 
     public static TaskResponse toResponse(Task task) {
         Long userId = task.getUser() != null ? task.getUser().getId() : null;
+        Long categoryId = task.getCategory() != null ? task.getCategory().getId() : null;
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
@@ -26,6 +27,7 @@ public final class TaskMapper {
                 task.getStatus(),
                 task.getPriority(),
                 userId,
+                categoryId,
                 task.getCreatedAt(),
                 task.getUpdatedAt());
     }
