@@ -3,6 +3,7 @@ package az.training.taskmanagement.controller;
 import az.training.taskmanagement.dto.CreateUserRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UserResponse;
+import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.service.TaskService;
 import az.training.taskmanagement.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -48,8 +49,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}/tasks")
-    public List<TaskResponse> getUserTasks(@PathVariable Long id) {
-        return taskService.getTasksByUser(id);
+    public List<TaskResponse> getUserTasks(@PathVariable Long id , @RequestParam(required = false) TaskStatus status) {
+       if(status== null){
+           taskService.getTasksByUser(id);
+       }
+        return taskService.findByUserIdAndStatus(id ,status ) ;
     }
 
     @DeleteMapping("/{id}")

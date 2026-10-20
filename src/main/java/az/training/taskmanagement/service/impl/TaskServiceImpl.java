@@ -55,6 +55,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<TaskResponse> searchTask(String keyword) {
+        return List.of();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasks(TaskStatus status) {
         List<Task> tasks = (status == null)
@@ -72,6 +77,16 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findByUser_Id(userId).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> findByUserIdAndStatus(Long userId, TaskStatus status) {
+        if(!userRepository.existsById(userId)){
+            throw ResourceNotFoundException.of(" User" , userId);
+        }
+
+        return taskRepository.findByUser_IdAndStatus(userId ,status).stream().map(TaskMapper::toResponse).toList();
     }
 
     @Override
