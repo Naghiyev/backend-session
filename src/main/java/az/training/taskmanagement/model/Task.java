@@ -1,5 +1,6 @@
 package az.training.taskmanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -7,11 +8,11 @@ import java.util.Objects;
 
 /**
  * Task JPA entity.
- *
- *  - @ManyToOne: çoxlu Task bir User-ə aiddir (əlaqənin "çox" tərəfi).
- *  - @JoinColumn: foreign key sütunu (user_id).
- *  - @Enumerated(STRING): enum bazada mətn kimi saxlanılır.
- *  - @PrePersist / @PreUpdate: audit sahələrini avtomatik doldurur.
+ * <p>
+ * - @ManyToOne: çoxlu Task bir User-ə aiddir (əlaqənin "çox" tərəfi).
+ * - @JoinColumn: foreign key sütunu (user_id).
+ * - @Enumerated(STRING): enum bazada mətn kimi saxlanılır.
+ * - @PrePersist / @PreUpdate: audit sahələrini avtomatik doldurur.
  */
 @Entity
 @Table(name = "tasks")
@@ -44,6 +45,11 @@ public class Task {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Category category;
 
     public Task() {
     }
