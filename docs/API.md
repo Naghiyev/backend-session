@@ -1,6 +1,6 @@
 # Task Management API — REST Kontraktı (Dərs 3)
 
-Bu sənəd API-nin **dizaynıdır**. Kod implementasiyası Dərs 4-dən başlayır.
+Bu sənəd API kontraktıdır. Category endpoint-ləri bu branch-da işləyir; User/Task HTTP endpoint-ləri hələ dizayn mərhələsindədir.
 Rəsmi maşın-oxunaqlı versiya: [`../openapi.yaml`](../openapi.yaml).
 
 ## Base URL
@@ -20,6 +20,11 @@ http://localhost:8080
 | 6 | GET    | `/tasks/{id}` | Task-ı al | `200 OK` |
 | 7 | PATCH  | `/tasks/{id}` | Task-ı qismən yenilə | `200 OK` |
 | 8 | DELETE | `/tasks/{id}` | Task-ı sil | `204 No Content` |
+| 9 | POST | `/categories` | Category yarat | `201 Created` |
+| 10 | GET | `/categories` | Bütün category-lər | `200 OK` |
+| 11 | GET | `/categories/{id}` | Category-ni al | `200 OK` |
+| 12 | PATCH | `/categories/{id}` | Category adını yenilə | `200 OK` |
+| 13 | DELETE | `/categories/{id}` | Category-ni sil | `204 No Content` |
 
 ## HTTP status kodları (bu API-də)
 
@@ -101,3 +106,82 @@ Response `404 Not Found`:
   "path": "/tasks/99"
 }
 ```
+
+
+## Category — implementasiya
+
+Category endpoint-ləri Spring Boot ilə implementasiya olunub. Serveri `mvn spring-boot:run` ilə başladın.
+Məlumatlar yaddaşda saxlanılır və tətbiq yenidən başladıqda silinir. User/Task HTTP endpoint-ləri hələ yalnız kontraktdır.
+Category `id` (int64) və `name` (string) sahələrindən ibarətdir.
+POST və PATCH üçün `name` məcburidir, boş və ya yalnız boşluqlardan ibarət ola bilməz.
+JSON body göndəriləndə `Content-Type: application/json` istifadə olunur.
+
+### 9) POST /categories
+Request:
+```json
+{"name":"Təhsil"}
+```
+Response `201 Created`:
+```json
+{"id":1,"name":"Təhsil"}
+```
+
+### 10) GET /categories
+Request body yoxdur.
+Response `200 OK`:
+```json
+[{"id":1,"name":"Təhsil"}]
+```
+Category yoxdursa `200 OK` və `[]` qaytarılır.
+
+### 11) GET /categories/1
+Request body yoxdur.
+Response `200 OK`:
+```json
+{"id":1,"name":"Təhsil"}
+```
+
+### 12) PATCH /categories/1
+Request:
+```json
+{"name":"İş"}
+```
+Response `200 OK`:
+```json
+{"id":1,"name":"İş"}
+```
+
+### 13) DELETE /categories/1
+Request body yoxdur.
+Response `204 No Content`: body qaytarılmır.
+
+### POST /categories — yanlış input
+Request:
+```json
+{ "name": "" }
+```
+Response `400 Bad Request`:
+```json
+{
+  "timestamp": "2026-09-04T10:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Category adı boş ola bilməz",
+  "path": "/categories"
+}
+```
+
+### GET /categories/99 — tapılmadı
+Response `404 Not Found`:
+```json
+{
+  "timestamp": "2026-09-04T10:00:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Category tapılmadı: id=99",
+  "path": "/categories/99"
+}
+```
+
+Eyni validation qaydası PATCH üçün də tətbiq olunur. Mövcud olmayan ID ilə PATCH və DELETE də eyni formatda `404 Not Found` qaytarır.
+Postman kolleksiyasındakı `categoryId` dəyişənini yaratma cavabındakı ID ilə yeniləyin.

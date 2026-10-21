@@ -38,7 +38,7 @@ git checkout branch_lesson4
 
 ## 📍 Bu branch: Lesson 4 — HTTP, REST & API Design
 
-Bu dərsdə **kod yox, kontrakt** dizayn olunur. `openapi.yaml`, `docs/API.md`, Postman
+Dərs 4-ün ilkin versiyasında API kontraktı dizayn olunur. Bu branch-da əlavə olaraq Category HTTP API implementasiya edilib. `openapi.yaml`, `docs/API.md`, Postman
 kolleksiyası və `.http` faylı əlavə edildi.
 
 - `openapi.yaml` — OpenAPI 3.0 spesifikasiyası
@@ -46,9 +46,13 @@ kolleksiyası və `.http` faylı əlavə edildi.
 ### İşə salmaq
 ```bash
 mvn -q compile exec:java
-# və ya
-javac -d out $(find src/main/java -name '*.java')
-java -Dfile.encoding=UTF-8 -cp out az.training.taskmanagement.Main
 ```
 
 Dərs qeydləri: [`LESSON.md`](LESSON.md) · Ev tapşırığı: [`HOMEWORK.md`](HOMEWORK.md)
+
+## Category HTTP API
+
+Category CRUD Spring Boot ilə işləyir: `mvn spring-boot:run`.
+Base URL: http://localhost:8080/categories. Məlumatlar yaddaşda saxlanılır.
+User/Task HTTP endpoint-ləri hələ implementasiya olunmayıb.
+Testlər: `mvn test`. Konsol demosu: `mvn compile exec:java`.

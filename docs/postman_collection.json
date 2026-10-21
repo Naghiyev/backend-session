@@ -5,7 +5,8 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base", "value": "http://localhost:8080" }
+    { "key": "base", "value": "http://localhost:8080" },
+    { "key": "categoryId", "value": "1" }
   ],
   "item": [
     {
@@ -54,6 +55,61 @@
     {
       "name": "Delete task",
       "request": { "method": "DELETE", "url": "{{base}}/tasks/1" }
+    },
+    {
+      "name": "Create category",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base}}/categories",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Təhsil\"\n}"
+        }
+      }
+    },
+    {
+      "name": "List categories",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/categories"
+      }
+    },
+    {
+      "name": "Get category by id",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/categories/{{categoryId}}"
+      }
+    },
+    {
+      "name": "Update category (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base}}/categories/{{categoryId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"İş\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete category",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base}}/categories/{{categoryId}}"
+      }
     }
   ]
 }
