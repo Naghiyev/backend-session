@@ -14,6 +14,23 @@ tags:
   - name: Tasks
 paths:
   /users:
+    get:
+      tags: [Users]
+      summary: Bütün user-ləri al və ada görə axtar
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Adın bir hissəsi; böyük-kiçik hərf fərqi nəzərə alınmır. Boş olduqda bütün user-lər qaytarılır.
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/UserResponse' }
     post:
       tags: [Users]
       summary: Yeni user yarat
