@@ -33,7 +33,6 @@ public class TaskController {
     public List<TaskResponse> getAll(@RequestParam(required = false) TaskStatus status) {
         return taskService.getTasks(status);
     }
-
     @GetMapping("/{id}")
     public TaskResponse getById(@PathVariable Long id) {
         return taskService.getTaskById(id);
