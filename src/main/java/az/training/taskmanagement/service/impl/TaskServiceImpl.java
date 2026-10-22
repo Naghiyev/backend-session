@@ -55,8 +55,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> searchTask(String keyword) {
-        return List.of();
+        return taskRepository.searchByTitle(keyword).stream().map(TaskMapper::toResponse).toList();
     }
 
     @Override

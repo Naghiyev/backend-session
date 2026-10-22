@@ -32,7 +32,10 @@ public class TaskController {
     public List<TaskResponse> getAll(@RequestParam(required = false) TaskStatus status) {
         return taskService.getTasks(status);
     }
-
+    @GetMapping("/search")
+    public List<TaskResponse> search(@RequestParam  String keyword){
+        return taskService.searchTask(keyword);
+    }
     @GetMapping("/{id}")
     public TaskResponse getById(@PathVariable Long id) {
         return taskService.getTaskById(id);
