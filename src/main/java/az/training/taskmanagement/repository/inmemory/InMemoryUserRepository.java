@@ -45,4 +45,13 @@ public class InMemoryUserRepository implements UserRepository {
     public void deleteById(Long id) {
         storage.remove(id);
     }
+
+    @Override
+    public List<User> findByNameContainingIgnoreCase(String name) {
+        return storage.values().stream()
+                .filter(u -> u.getName() != null && u.getName().toLowerCase().contains(name.toLowerCase()))
+                .toList();
+
+
+    }
 }
