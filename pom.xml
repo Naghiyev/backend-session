@@ -17,11 +17,12 @@
     <packaging>jar</packaging>
 
     <name>Task Management API</name>
-    <description>Lesson 5 - PostgreSQL and Spring Data JPA persistence</description>
+    <description>Lesson 8 - PostgreSQL and Spring Data JPA persistence</description>
 
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.42</lombok.version>
     </properties>
 
     <dependencies>
@@ -39,6 +40,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
