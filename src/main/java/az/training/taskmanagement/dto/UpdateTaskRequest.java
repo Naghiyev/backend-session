@@ -2,6 +2,7 @@ package az.training.taskmanagement.dto;
 
 import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.TaskStatus;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -14,9 +15,9 @@ public record UpdateTaskRequest(
 
         @Size(max = 1000, message = "description maksimum 1000 simvol")
         String description,
-
+        @NotNull(message = "Status qeyd edilməlidir")
         TaskStatus status,
-
+        @NotNull(message = "Prioritet qeyd edilməlidir")
         Priority priority
 ) {
 }
