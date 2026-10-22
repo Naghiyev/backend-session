@@ -39,6 +39,10 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="category_id", nullable = false)
+    private Category category;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -54,6 +58,7 @@ public class Task {
         this.status = status;
         this.priority = priority;
         this.user = user;
+        //this.category=category;
     }
 
     @PrePersist
@@ -111,6 +116,14 @@ public class Task {
         return user;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -137,7 +150,16 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{id=" + id + ", title='" + title + "', status=" + status
-                + ", priority=" + priority + "}";
+        return "Task{" +
+                "category=" + category +
+                ", id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", user=" + user +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }
