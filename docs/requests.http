@@ -39,3 +39,41 @@ GET {{base}}/users/1/tasks
 
 ### 9. Task-ı sil
 DELETE {{base}}/tasks/1
+
+### ─────────────────────────────────────────────
+### Transactional Outbox nümunəsi (docs/OUTBOX.md)
+### Əvvəlcə: docker compose up -d postgres kafka kafka-ui
+### ─────────────────────────────────────────────
+
+### 15. Login (token al)
+# @name outboxLogin
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "admin123" }
+
+### 16. Task yarat → tasks + outbox_event (PENDING) bir tranzaksiyada yazılır
+POST {{base}}/tasks
+Authorization: Bearer {{outboxLogin.response.body.token}}
+Content-Type: application/json
+
+{ "title": "Outbox demo task", "priority": "HIGH", "userId": 1 }
+
+### 17. Statusu dəyiş → TaskStatusChanged eventi
+PATCH {{base}}/tasks/1
+Authorization: Bearer {{outboxLogin.response.body.token}}
+Content-Type: application/json
+
+{ "status": "IN_PROGRESS" }
+
+### 18. Outbox cədvəli (son 50 event; PENDING → ~1 san sonra SENT)
+GET {{base}}/outbox/events
+
+### 19. Yalnız göndərilməmiş eventlər
+GET {{base}}/outbox/events?status=PENDING
+
+### 20. Status üzrə say
+GET {{base}}/outbox/stats
+
+### 21. Consumer-in yaratdığı bildirişlər (idempotent consumer)
+GET {{base}}/outbox/notifications

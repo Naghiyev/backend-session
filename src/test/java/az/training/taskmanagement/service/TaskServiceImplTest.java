@@ -9,6 +9,9 @@ import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.outbox.OutboxWriter;
+import az.training.taskmanagement.outbox.event.TaskCreatedEvent;
+import az.training.taskmanagement.outbox.event.TaskStatusChangedEvent;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.impl.TaskServiceImpl;
@@ -32,6 +35,9 @@ class TaskServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private OutboxWriter outboxWriter;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -58,6 +64,8 @@ class TaskServiceImplTest {
         assertEquals(TaskStatus.TODO, response.status());
         assertEquals(1L, response.userId().longValue());
         verify(taskRepository).save(any());
+        // Outbox: TaskCreated eventi eyni tranzaksiyada yazılmalıdır
+        verify(outboxWriter).append(eq("task"), eq("10"), eq(TaskCreatedEvent.TYPE), any(TaskCreatedEvent.class));
     }
 
     @Test
@@ -68,6 +76,7 @@ class TaskServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class, () -> taskService.createTask(request));
         verify(taskRepository, never()).save(any());
+        verifyNoInteractions(outboxWriter);
     }
 
     @Test
@@ -97,6 +106,21 @@ class TaskServiceImplTest {
         TaskResponse response = taskService.updateTask(3L, request);
 
         assertEquals(TaskStatus.DONE, response.status());
+        verify(outboxWriter).append(eq("task"), eq("3"), eq(TaskStatusChangedEvent.TYPE), any(TaskStatusChangedEvent.class));
+    }
+
+    @Test
+    @DisplayName("updateTask: status dəyişmirsə → outbox event yazılmır")
+    void updateTask_withoutStatusChange_noOutboxEvent() {
+        User user = existingUser();
+        Task task = new Task("Task", "desc", TaskStatus.TODO, Priority.MEDIUM, user);
+        task.setId(4L);
+        when(taskRepository.findById(4L)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any())).thenReturn(task);
+
+        taskService.updateTask(4L, new UpdateTaskRequest("Yeni ad", null, null, null));
+
+        verifyNoInteractions(outboxWriter);
     }
 
     @Test

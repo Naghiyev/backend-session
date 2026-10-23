@@ -9,6 +9,9 @@ import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.outbox.OutboxWriter;
+import az.training.taskmanagement.outbox.event.TaskCreatedEvent;
+import az.training.taskmanagement.outbox.event.TaskStatusChangedEvent;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
@@ -29,10 +32,12 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final OutboxWriter outboxWriter;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, OutboxWriter outboxWriter) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.outboxWriter = outboxWriter;
     }
 
     @Override
@@ -43,6 +48,12 @@ public class TaskServiceImpl implements TaskService {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
         Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
+
+        // Transactional Outbox: event Kafka-ya birbaşa yox, eyni tranzaksiyada outbox cədvəlinə yazılır.
+        // Task INSERT və outbox INSERT birlikdə commit olunur (və ya birlikdə rollback).
+        outboxWriter.append("task", String.valueOf(saved.getId()),
+                TaskCreatedEvent.TYPE, TaskCreatedEvent.from(saved));
+
         log.info("Task yaradıldı: id={}, userId={}", saved.getId(), user.getId());
         return TaskMapper.toResponse(saved);
     }
@@ -86,6 +97,7 @@ public class TaskServiceImpl implements TaskService {
     @CacheEvict(value = "tasks", key = "#id")
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
         Task task = findTaskOrThrow(id);
+        TaskStatus oldStatus = task.getStatus();
         if (request.title() != null) {
             task.setTitle(request.title());
         }
@@ -99,7 +111,14 @@ public class TaskServiceImpl implements TaskService {
             task.setPriority(request.priority());
         }
         // updatedAt @PreUpdate ilə avtomatik yenilənir
-        return TaskMapper.toResponse(taskRepository.save(task));
+        Task saved = taskRepository.save(task);
+
+        // Status həqiqətən dəyişibsə, eyni tranzaksiyada TaskStatusChanged eventi yazılır
+        if (saved.getStatus() != oldStatus) {
+            outboxWriter.append("task", String.valueOf(saved.getId()),
+                    TaskStatusChangedEvent.TYPE, TaskStatusChangedEvent.of(saved, oldStatus));
+        }
+        return TaskMapper.toResponse(saved);
     }
 
     @Override
