@@ -14,6 +14,7 @@ public record CreateTaskRequest(
         @Size(max = 1000, message = "description maksimum 1000 simvol")
         String description,
 
+        @NotNull(message = "priority tələb olunur (LOW, MEDIUM, HIGH)")
         Priority priority,
 
         @NotNull(message = "userId tələb olunur")
