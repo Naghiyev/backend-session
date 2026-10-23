@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 public record CreateUserRequest(
 
         @NotBlank(message = "name boş ola bilməz")
-        @Size(max = 100, message = "name maksimum 100 simvol")
+        @Size(min=2, max=50 , message=" name 2 ve 50 arasi olur ")
         String name,
 
         @NotBlank(message = "email boş ola bilməz")
