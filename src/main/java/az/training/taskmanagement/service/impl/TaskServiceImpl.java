@@ -36,10 +36,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse createTask(CreateTaskRequest request) {
         if (request.title() == null || request.title().isBlank()) {
+            log.warn("Task yaradilmadi: title boşdur, userId= {}", request.userId());
             throw new ValidationException("title boş ola bilməz");
         }
         User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
+                .orElseThrow(() ->{log.warn("Task yaradılmadı: user tapılmadı, userId={}", request.userId());
+                           return ResourceNotFoundException.of("User", request.userId());});
         Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
         log.info("Task yaradıldı: id={}, userId={}", saved.getId(), user.getId());
         return TaskMapper.toResponse(saved);
@@ -72,6 +74,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasksByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
+            log.warn("User tapılmadı: userId={}", userId);
             throw ResourceNotFoundException.of("User", userId);
         }
         return taskRepository.findByUser_Id(userId).stream()
@@ -94,6 +97,9 @@ public class TaskServiceImpl implements TaskService {
         if (request.priority() != null) {
             task.setPriority(request.priority());
         }
+        Task saved = taskRepository.save(task);
+        log.info("Task yeniləndi: id={}, status={}, priority={}",
+                saved.getId(), saved.getStatus(), saved.getPriority());
         // updatedAt @PreUpdate ilə avtomatik yenilənir
         return TaskMapper.toResponse(taskRepository.save(task));
     }
@@ -107,6 +113,9 @@ public class TaskServiceImpl implements TaskService {
 
     private Task findTaskOrThrow(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> ResourceNotFoundException.of("Task", id));
+                .orElseThrow(() -> {
+                    log.warn("Task tapılmadı: id={}", id);
+                    return ResourceNotFoundException.of("Task", id);
+                });
     }
 }

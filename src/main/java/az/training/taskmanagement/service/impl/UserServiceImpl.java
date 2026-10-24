@@ -31,12 +31,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(CreateUserRequest request) {
         if (request.name() == null || request.name().isBlank()) {
+            log.warn("User yaradılmadı: name boşdur");
             throw new ValidationException("name boş ola bilməz");
         }
         if (request.email() == null || request.email().isBlank()) {
+            log.warn("User yaradılmadı: email boşdur");
             throw new ValidationException("email boş ola bilməz");
         }
         if (userRepository.existsByEmail(request.email())) {
+            log.warn("User yaradılmadı: email artıq mövcuddur, email={}", request.email());
             throw new DuplicateResourceException("Bu email artıq mövcuddur: " + request.email());
         }
         User saved = userRepository.save(UserMapper.toEntity(request));
@@ -67,6 +70,9 @@ public class UserServiceImpl implements UserService {
 
     private User findUserOrThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> ResourceNotFoundException.of("User", id));
+                .orElseThrow(() -> {
+                    log.warn("User tapılmadı: id={}", id);
+                    return ResourceNotFoundException.of("User", id);
+                });
     }
 }
