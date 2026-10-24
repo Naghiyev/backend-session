@@ -47,12 +47,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
+        log.info("User əldə edilir: id={}", id);
         return UserMapper.toResponse(findUserOrThrow(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
+        log.info("User-ler əldə edilir.");
         return userRepository.findAll().stream()
                 .map(UserMapper::toResponse)
                 .toList();
@@ -67,6 +69,9 @@ public class UserServiceImpl implements UserService {
 
     private User findUserOrThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> ResourceNotFoundException.of("User", id));
+                .orElseThrow(() -> {
+                    log.warn("User tapılmadı: id={}", id);
+                    return ResourceNotFoundException.of("User", id);
+                });
     }
 }

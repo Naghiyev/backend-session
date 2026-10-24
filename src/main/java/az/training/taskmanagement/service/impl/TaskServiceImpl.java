@@ -48,12 +48,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public TaskResponse getTaskById(Long id) {
+        log.info("Task əldə edilir: id={}", id);
         return TaskMapper.toResponse(findTaskOrThrow(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasks() {
+        log.info("Task-lar əldə edilir.");
         return taskRepository.findAll().stream()
                 .map(TaskMapper::toResponse)
                 .toList();
@@ -62,6 +64,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasks(TaskStatus status) {
+        log.info("Task-lar əldə edilir: status={}", status);
         List<Task> tasks = (status == null)
                 ? taskRepository.findAll()
                 : taskRepository.findByStatus(status);
@@ -72,8 +75,10 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasksByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
+            log.info("Bu user-e aid Task mövcud deyil : userId={}",userId);
             throw ResourceNotFoundException.of("User", userId);
         }
+        log.info("User-in task-ları əldə edilir: userId={}", userId);
         return taskRepository.findByUser_Id(userId).stream()
                 .map(TaskMapper::toResponse)
                 .toList();
@@ -81,6 +86,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse updateTask(Long id, UpdateTaskRequest request) {
+        log.info("Verilən id-yə uyğun Task yenilənir : id = {}", id);
         Task task = findTaskOrThrow(id);
         if (request.title() != null) {
             task.setTitle(request.title());
@@ -95,7 +101,9 @@ public class TaskServiceImpl implements TaskService {
             task.setPriority(request.priority());
         }
         // updatedAt @PreUpdate ilə avtomatik yenilənir
-        return TaskMapper.toResponse(taskRepository.save(task));
+        Task updated = taskRepository.save(task);
+        log.info("Task uğurla yeniləndi: id={}", updated.getId());
+        return TaskMapper.toResponse(updated);
     }
 
     @Override
@@ -105,8 +113,13 @@ public class TaskServiceImpl implements TaskService {
         log.info("Task silindi: id={}", id);
     }
 
+
+
     private Task findTaskOrThrow(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> ResourceNotFoundException.of("Task", id));
+                .orElseThrow(() -> {
+                    log.warn("Task tapılmadı: id={}", id);
+                    return ResourceNotFoundException.of("Task", id);
+                });
     }
 }

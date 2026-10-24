@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -43,6 +44,25 @@ public class GlobalExceptionHandler {
         log.warn("400 Bad Request: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
     }
+
+    @ExceptionHandler(TaskLimitExceededException.class)
+    public ResponseEntity<ApiError> handleTaskLimitExceed(TaskLimitExceededException ex,HttpServletRequest req) {
+        log.warn("409 Conflict: {}",ex.getMessage(), req);
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest req) {
+
+        String message = "Yanlış parametr dəyəri: " + ex.getName();
+
+        log.warn("400 Bad Request: {}", message);
+
+        return build(HttpStatus.BAD_REQUEST, message, req);
+    }
+
 
     /** @Valid uğursuz olduqda (field-level validation). */
     @ExceptionHandler(MethodArgumentNotValidException.class)
