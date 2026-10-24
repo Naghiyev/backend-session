@@ -6,9 +6,8 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
-import az.training.taskmanagement.model.Task;
-import az.training.taskmanagement.model.TaskStatus;
-import az.training.taskmanagement.model.User;
+import az.training.taskmanagement.model.*;
+import az.training.taskmanagement.repository.CategoryRepository;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
@@ -23,10 +22,12 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -36,7 +37,13 @@ public class TaskServiceImpl implements TaskService {
         }
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
-        Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
+
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> ResourceNotFoundException.of("Category", request.categoryId()));
+
+        Task task = TaskMapper.toEntity(request, user);// bu hisse
+        task.setCategory(category);
+        Task saved = taskRepository.save(task);
         return TaskMapper.toResponse(saved);
     }
 
@@ -97,6 +104,25 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTask(Long id) {
         findTaskOrThrow(id);
         taskRepository.deleteById(id);
+    }
+
+    @Override
+    public List<TaskResponse> getTasksByUserAndStatus(Long userId, TaskStatus status) {
+        if (!userRepository.existsById(userId)) {
+            throw ResourceNotFoundException.of("User", userId);
+        }
+        return taskRepository.findByUser_IdAndStatus(userId, status)
+                .stream()
+                .map(TaskMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<TaskResponse> getTasksByPriority(Priority priority) {
+        return taskRepository.findTaskByPriority(priority)
+                .stream()
+                .map(TaskMapper::toResponse)
+                .toList();
     }
 
     private Task findTaskOrThrow(Long id) {
