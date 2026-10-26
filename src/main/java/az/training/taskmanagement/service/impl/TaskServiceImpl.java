@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
 
 @Service
@@ -42,6 +43,11 @@ public class TaskServiceImpl implements TaskService {
         }
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
+        int userTaskCount = taskRepository.findByUser_Id(user.getId()).size();
+        if (userTaskCount >= 5) {
+            log.warn("Task yaratma limiti aşıldı: userId={}, mövcud task sayı={}", user.getId(), userTaskCount);
+            throw new az.training.taskmanagement.exception.TaskLimitExceededException("İstifadəçi üçün maksimum task limitinə çatılıb.");
+        }
         Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
         log.info("Task yaradıldı: id={}, userId={}", saved.getId(), user.getId());
         return TaskMapper.toResponse(saved);
@@ -51,6 +57,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     @Cacheable(value = "tasks", key = "#id")
     public TaskResponse getTaskById(Long id) {
+        log.info("Task axtarılır: id={}", id);
         return TaskMapper.toResponse(findTaskOrThrow(id));
     }
 
@@ -105,6 +112,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @CacheEvict(value = "tasks", key = "#id")
     public void deleteTask(Long id) {
+        log.info("Task silinməsi prosesi başladı: id={}", id);
         findTaskOrThrow(id);
         taskRepository.deleteById(id);
         log.info("Task silindi: id={}", id);

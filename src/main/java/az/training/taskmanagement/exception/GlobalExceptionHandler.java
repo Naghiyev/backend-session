@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 /**
  * Bütün controller-lər üçün mərkəzləşdirilmiş xəta idarəçiliyi.
- *
+ * <p>
  * Hər exception müvafiq HTTP statusuna və standart ApiError body-sinə map olunur.
  * Beləliklə controller-lərdə try/catch təkrarına ehtiyac qalmır.
  */
@@ -50,7 +51,9 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
     }
 
-    /** @Valid uğursuz olduqda (field-level validation). */
+    /**
+     * @Valid uğursuz olduqda (field-level validation).
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleBeanValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
@@ -63,7 +66,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    /** Gözlənilməyən bütün digər xətalar → 500. */
+    /**
+     * Gözlənilməyən bütün digər xətalar → 500.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest req) {
         log.error("500 Internal Server Error: {}", ex.getMessage());
@@ -73,5 +78,18 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest req) {
         ApiError body = ApiError.of(status.value(), status.getReasonPhrase(), message, req.getRequestURI());
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(TaskLimitExceededException.class)
+    public ResponseEntity<ApiError> handleTaskLimit(TaskLimitExceededException ex, HttpServletRequest req) {
+        log.warn("409 Conflict: {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        String message = String.format("Parametr '%s' üçün yanlış dəyər daxil edilib.", ex.getName());
+        log.warn("400 Bad Request: {}", message);
+        return build(HttpStatus.BAD_REQUEST, message, req);
     }
 }
