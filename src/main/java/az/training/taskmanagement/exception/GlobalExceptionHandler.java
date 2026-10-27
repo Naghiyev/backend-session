@@ -10,8 +10,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,10 +34,32 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), req);
     }
 
+
+
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiError> handleDuplicate(DuplicateResourceException ex, HttpServletRequest req) {
         log.warn("409 Conflict: {}", ex.getMessage());
         return build(HttpStatus.CONFLICT, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(TaskLimitExceededException.class)
+    public ResponseEntity<ApiError> handleTaskLimit(TaskLimitExceededException ex, HttpServletRequest req) {
+        log.warn("409 Conflict: {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                       HttpServletRequest req) {
+        String message = "'" + ex.getName() + "' parametri üçün yanlış dəyər: '" + ex.getValue() + "'";
+
+        Class<?> requiredType = ex.getRequiredType();
+        if (requiredType != null && requiredType.isEnum()) {
+            message += ". Mümkün dəyərlər: " + Arrays.toString(requiredType.getEnumConstants());
+        }
+
+        log.warn("400 Type mismatch: {}", message);
+        return build(HttpStatus.BAD_REQUEST, message, req);
     }
 
     @ExceptionHandler(ValidationException.class)

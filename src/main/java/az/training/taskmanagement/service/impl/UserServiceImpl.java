@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("email boş ola bilməz");
         }
         if (userRepository.existsByEmail(request.email())) {
+            log.warn("Təkrar email ilə qeydiyyat cəhdi: {}", request.email());
             throw new DuplicateResourceException("Bu email artıq mövcuddur: " + request.email());
         }
         User saved = userRepository.save(UserMapper.toEntity(request));
@@ -60,7 +61,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        findUserOrThrow(id);
+        User user = findUserOrThrow(id);
+        log.info("User silinir: id={}, task sayı={}", id, user.getTasks().size());
         userRepository.deleteById(id);
         log.info("User silindi: id={}", id);
     }
