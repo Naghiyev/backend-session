@@ -4,6 +4,7 @@ import az.training.taskmanagement.dto.CreateTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
+import az.training.taskmanagement.exception.TaskLimitExceededException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
@@ -24,6 +25,9 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private static final int MAX_ACTIVE_TASKS_PER_USER = 5;
+
+
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -40,6 +44,14 @@ public class TaskServiceImpl implements TaskService {
         }
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
+
+        //userin ne qeder task limiti var assa nolar hemin hisse elave edildi
+        long activeTasks = taskRepository.countByUser_IdAndStatusNot(user.getId(), TaskStatus.DONE);
+        if (activeTasks >= MAX_ACTIVE_TASKS_PER_USER) {
+            log.warn("Task limiti aşıldı: userId={}, aktiv={}", user.getId(), activeTasks);
+            throw new TaskLimitExceededException(user.getId(), MAX_ACTIVE_TASKS_PER_USER);
+        }
+
         Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
         log.info("Task yaradıldı: id={}, userId={}", saved.getId(), user.getId());
         return TaskMapper.toResponse(saved);
@@ -72,6 +84,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasksByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
+            log.warn("Mövcud olmayan user-in task-ları istənildi: userId={}", userId);
             throw ResourceNotFoundException.of("User", userId);
         }
         return taskRepository.findByUser_Id(userId).stream()
@@ -94,8 +107,10 @@ public class TaskServiceImpl implements TaskService {
         if (request.priority() != null) {
             task.setPriority(request.priority());
         }
-        // updatedAt @PreUpdate ilə avtomatik yenilənir
-        return TaskMapper.toResponse(taskRepository.save(task));
+
+        Task saved = taskRepository.save(task);
+        log.info("Task yeniləndi: id={}, status={}, priority={}", id, saved.getStatus(), saved.getPriority());
+        return TaskMapper.toResponse(saved);
     }
 
     @Override
