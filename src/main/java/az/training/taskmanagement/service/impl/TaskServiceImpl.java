@@ -4,6 +4,7 @@ import az.training.taskmanagement.dto.CreateTaskRequest;
 import az.training.taskmanagement.dto.TaskResponse;
 import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
+import az.training.taskmanagement.exception.TaskLimitExceededException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
 import az.training.taskmanagement.model.Task;
@@ -28,6 +29,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
+    private  static final int MaxTaskAllUsers=4;
     public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -40,6 +42,12 @@ public class TaskServiceImpl implements TaskService {
         }
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> ResourceNotFoundException.of("User", request.userId()));
+
+        long taskCount=taskRepository.countByUserId(request.userId());
+        if(taskCount>=MaxTaskAllUsers){
+            throw new TaskLimitExceededException(user.getId()+"Task limit exceeded" + MaxTaskAllUsers);
+        }
+
         Task saved = taskRepository.save(TaskMapper.toEntity(request, user));
         log.info("Task yaradıldı: id={}, userId={}", saved.getId(), user.getId());
         return TaskMapper.toResponse(saved);
@@ -95,6 +103,9 @@ public class TaskServiceImpl implements TaskService {
             task.setPriority(request.priority());
         }
         // updatedAt @PreUpdate ilə avtomatik yenilənir
+
+        log.info("Task is update now " , id);
+
         return TaskMapper.toResponse(taskRepository.save(task));
     }
 
