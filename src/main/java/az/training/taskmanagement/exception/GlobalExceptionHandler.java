@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
         log.warn("404 Not Found: {}", ex.getMessage());
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(TaskLimitExceededException.class)
+    public ResponseEntity<ApiError> handleLimitExceeded(TaskLimitExceededException  ex ,HttpServletRequest req){
+        log.warn("409 Limit Exceeded: {}", ex.getMessage(),req);
+        return build(HttpStatus.CONFLICT , ex.getMessage(), req);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
@@ -55,6 +62,20 @@ public class GlobalExceptionHandler {
         ApiError body = new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
                 "Bad Request", "Validation xətası", req.getRequestURI(), fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req){
+        String paramName= ex.getName();
+        Object value=ex.getValue();
+        Class<?> requiredType=ex.getRequiredType();
+        String typeName=(requiredType!= null)? requiredType.getSimpleName() : "bilinmir";
+
+
+        String message= paramName+" " +value + "deyer yanlis , gozlenilen tip "+ typeName;
+
+        log.warn("400 type mismatch: {}" ,message);
+        return build(HttpStatus.BAD_REQUEST , message, req);
     }
 
     /** Gözlənilməyən bütün digər xətalar → 500. */
