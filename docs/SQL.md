@@ -37,6 +37,17 @@ GROUP BY u.name;
 -- UPDATE / DELETE
 UPDATE tasks SET status = 'IN_PROGRESS' WHERE id = 1;
 DELETE FROM tasks WHERE id = 1;
+
+--Chalishma 1
+SELECT * FROM tasks WHERE priority = 'HIGH' AND status = 'TODO';
+
+--Chalishma 2
+SELECT u.id, u.name, u.email  FROM users u LEFT JOIN tasks t ON u.id = t.user_id
+WHERE t.id IS NULL;
+
+--Chalishma 3
+SELECT status, COUNT(*) AS task_count FROM tasks GROUP BY status;
+
 ```
 
 ## Çalışmalar
