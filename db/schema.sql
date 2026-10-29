@@ -1,23 +1,40 @@
--- Task Management API — relational schema (Lesson 7)
--- İşə salmaq:  psql -h localhost -U taskuser -d taskdb -f db/schema.sql
 
-CREATE TABLE IF NOT EXISTS users (
-    id    BIGSERIAL PRIMARY KEY,
-    name  VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE           -- UNIQUE constraint
+-- Task Management API - Lesson 7
+-- Database schema: users, categories, tasks
+
+-- 1. Drop old tables to rebuild the schema from scratch.
+DROP TABLE IF EXISTS tasks CASCADE;
+DROP TABLE IF EXISTS task CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- 2. Users table.
+CREATE TABLE users (
+                       id BIGSERIAL PRIMARY KEY,
+                       name VARCHAR(100) NOT NULL,
+                       email VARCHAR(150) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS tasks (
-    id          BIGSERIAL PRIMARY KEY,
-    title       VARCHAR(200) NOT NULL,
-    description VARCHAR(1000),
-    status      VARCHAR(20)  NOT NULL,           -- TODO | IN_PROGRESS | DONE
-    priority    VARCHAR(20)  NOT NULL,           -- LOW | MEDIUM | HIGH
-    user_id     BIGINT NOT NULL REFERENCES users(id),  -- FOREIGN KEY
-    created_at  TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMP NOT NULL DEFAULT now()
+-- 3. Categories table.
+CREATE TABLE categories (
+                            id BIGSERIAL PRIMARY KEY,
+                            name VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Index: user üzrə task axtarışını sürətləndirir
-CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_status  ON tasks(status);
+-- 4. Tasks table.
+CREATE TABLE tasks (
+                       id BIGSERIAL PRIMARY KEY,
+                       title VARCHAR(200) NOT NULL,
+                       description VARCHAR(1000),
+                       status VARCHAR(20) NOT NULL,
+                       priority VARCHAR(20) NOT NULL,
+                       user_id BIGINT NOT NULL REFERENCES users(id),
+                       category_id BIGINT REFERENCES categories(id),
+                       created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                       updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- 5. Indexes for frequently used searches.
+CREATE INDEX idx_tasks_user_id ON tasks(user_id);
+CREATE INDEX idx_tasks_category_id ON tasks(category_id);
+CREATE INDEX idx_tasks_status ON tasks(status);
