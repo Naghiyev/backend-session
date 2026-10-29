@@ -6,6 +6,7 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
@@ -52,9 +53,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getTasks(TaskStatus status) {
-        return taskRepository.findAll().stream()
-                .filter(t -> status == null || t.getStatus() == status)
+    public List<TaskResponse> getTasks(Priority priority) {
+        List<Task> tasks = taskRepository.findAll();
+
+        if (priority != null) {
+            tasks = tasks.stream()
+                    .filter(task -> task.getPriority() == priority)
+                    .toList();
+        }
+
+        return tasks.stream()
                 .map(TaskMapper::toResponse)
                 .toList();
     }
