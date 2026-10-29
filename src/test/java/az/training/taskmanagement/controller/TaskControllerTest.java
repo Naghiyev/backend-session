@@ -14,6 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -48,6 +52,20 @@ class TaskControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.status").value("TODO"));
+    }
+
+    @Test
+    @DisplayName("GET /tasks?status=TODO → 200")
+    void getTasks_withStatus_returns200() throws Exception {
+
+        when(taskService.getTasks(TaskStatus.TODO))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/tasks")
+                        .param("status", "TODO"))
+                .andExpect(status().isOk());
+
+        verify(taskService).getTasks(TaskStatus.TODO);
     }
 
     @Test
@@ -93,4 +111,21 @@ class TaskControllerTest {
         mockMvc.perform(delete("/tasks/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @ParameterizedTest
+    @EnumSource(TaskStatus.class)
+    @DisplayName("GET /tasks müxtəlif statuslarla → 200")
+    void getTasks_withDifferentStatuses_returns200(TaskStatus status)
+            throws Exception {
+
+        when(taskService.getTasks(status))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/tasks")
+                        .param("status", status.name()))
+                .andExpect(status().isOk());
+
+        verify(taskService).getTasks(status);
+    }
+
 }
