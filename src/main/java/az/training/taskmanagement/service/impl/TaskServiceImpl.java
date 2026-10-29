@@ -6,11 +6,14 @@ import az.training.taskmanagement.dto.UpdateTaskRequest;
 import az.training.taskmanagement.exception.ResourceNotFoundException;
 import az.training.taskmanagement.exception.ValidationException;
 import az.training.taskmanagement.mapper.TaskMapper;
+import az.training.taskmanagement.model.Priority;
 import az.training.taskmanagement.model.Task;
 import az.training.taskmanagement.model.TaskStatus;
 import az.training.taskmanagement.repository.TaskRepository;
 import az.training.taskmanagement.repository.UserRepository;
 import az.training.taskmanagement.service.TaskService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,20 +47,33 @@ public class TaskServiceImpl implements TaskService {
         return TaskMapper.toResponse(findTaskOrThrow(id));
     }
 
-    @Override
-    public List<TaskResponse> getAllTasks() {
-        return taskRepository.findAll().stream()
-                .map(TaskMapper::toResponse)
-                .toList();
-    }
+//    @Override
+//    public Page<TaskResponse> getAllTasks(Pageable pageable) {
+//        return taskRepository.findAll(pageable)
+//                .map(TaskMapper::toResponse);
+//    }
+//
+//    @Override
+//    public List<TaskResponse> getTasks(TaskStatus status, Priority priority) {
+//        return taskRepository.findAll().stream()
+//                .filter(t -> status == null || t.getStatus() == status)
+//                .filter(t-> priority == null || t.getPriority()==priority)
+//                .map(TaskMapper::toResponse)
+//                .toList();
+//    }
 
     @Override
-    public List<TaskResponse> getTasks(TaskStatus status) {
-        return taskRepository.findAll().stream()
-                .filter(t -> status == null || t.getStatus() == status)
-                .map(TaskMapper::toResponse)
-                .toList();
+    public Page<TaskResponse> getTasks(
+            TaskStatus status,
+            Priority priority,
+            Pageable pageable) {
+
+        return taskRepository.findAll(pageable)
+                .map(TaskMapper::toResponse);
     }
+
+
+
 
     @Override
     public List<TaskResponse> getTasksByUser(Long userId) {
@@ -85,6 +101,36 @@ public class TaskServiceImpl implements TaskService {
             task.setPriority(request.priority());
         }
         task.setUpdatedAt(LocalDateTime.now());
+        return TaskMapper.toResponse(taskRepository.save(task));
+    }
+
+    @Override
+    public TaskResponse replaceTask(Long id, UpdateTaskRequest request) {
+        Task task = findTaskOrThrow(id);
+
+        if (request.title() == null || request.title().isBlank()) {
+            throw new ValidationException("Task title boş ola bilməz");
+        }
+
+        if (request.status() == null) {
+            throw new ValidationException("Task status boş ola bilməz");
+        }
+
+        if (request.priority() == null) {
+            throw new ValidationException("Task priority boş ola bilməz");
+        }
+
+        if (request.description() == null) {
+            throw new ValidationException("Task description boş ola bilməz");
+        }
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
+
+        task.setUpdatedAt(LocalDateTime.now());
+
         return TaskMapper.toResponse(taskRepository.save(task));
     }
 
